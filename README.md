@@ -1,20 +1,37 @@
-# PolyGlot x Hatafuku - Duolingo Edition (TTMIK Korean + Logistics + CS)
+# PolyGlot × Hatafuku Studio Pro
 
-แพ็กเกจแอปพลิเคชันการเรียนรู้ภาษาเกาหลีแบบสมบูรณ์พร้อมใช้งาน (Offline Ready)
+สตูดิโอสร้างสื่อการเรียนรู้ ใบงาน ปริศนา สติกเกอร์ 3D ธีมไลน์ และระบบเรียนภาษา PolyGlot
 
-## 📦 เนื้อหาในไฟล์ ZIP:
-1. `index.html` - ไฟล์แอปพลิเคชันหลัก ดับเบิลคลิกเพื่อเปิดใช้งานในเว็บเบราว์เซอร์ (Chrome, Edge, Safari, Firefox) ได้ทันที ไม่ต้องต่ออินเทอร์เน็ต
-2. `PolyGlot_x_Hatafuku_Merged.html` - ไฟล์สำรองต้นฉบับ
-3. `run_local_server.py` - สคริปต์เปิด Local HTTP Server แบบง่าย (สำหรับนักพัฒนา)
-4. `run_local_server.bat` - ดับเบิลคลิกบน Windows เพื่อเปิดเซิร์ฟเวอร์จำลอง
+## รันในเครื่อง
 
-## 🚀 วิธีเปิดใช้งาน:
-- **วิธีที่ 1 (ง่ายที่สุด):** แตกไฟล์ .ZIP แล้วดับเบิลคลิกที่ `index.html` ได้เลย
-- **วิธีที่ 2:** หากใช้ Python สามารถรัน `python run_local_server.py` แล้วเปิด `http://localhost:8000`
+ต้องมี Node.js (ไม่ต้องใช้ API key)
 
-## 🌟 ฟีเจอร์หลักในแอป:
-- **TTMIK Korean Lessons**: คอร์สภาษาเกาหลีระดับต้น-กลาง คำศัพท์ ไวยากรณ์ การออกเสียง
-- **Interactive Flashcards & Drills**: ระบบฝึกจำคำศัพท์ สไตล์ Duolingo พร้อมระบบคะแนนและ Streak
-- **Hatafuku Logistics Edition**: จำลองการบริหารงานโลจิสติกส์และการขนส่ง
-- **Computer Science & Coding Track**: โรดแมปและแบบทดสอบสายเทคโนโลยีและการเขียนโค้ด
-- **Audio & Notes Viewer**: เครื่องมือฟังเสียงและจดบันทึกประกอบบทเรียน
+1. `npm install`
+2. `npm run dev` (หรือ `npm start` เพื่อ build แล้วรันแบบจริง) แล้วเปิด http://localhost:3200
+
+> ห้ามเปิดโฟลเดอร์โปรเจกต์ด้วยเซิร์ฟเวอร์ไฟล์ธรรมดา (http.server, Live Server) หรือดับเบิลคลิก index.html จะขึ้นจอขาว เพราะ `src/main.tsx` ต้องผ่าน Vite
+> ถ้าจะเอาไปโฮสต์ ให้ `npm run build` แล้วใช้โฟลเดอร์ `dist/` (path เป็น relative แล้ว ใช้ได้ทุกโฟลเดอร์)
+
+## สำรอง/กู้คืนงาน
+
+ปุ่ม "สำรอง" และ "กู้คืน" ที่แถบบนสุด จะบันทึกและกู้ข้อมูลของทุกโมดูลเป็นไฟล์ .json ไฟล์เดียว
+
+## โครงสร้าง
+
+- `src/` แอปหลัก React และเครื่องมือแบบ native
+- `public/apps/` โมดูล HTML แบบ standalone (ฝังผ่าน iframe) ลิงก์อยู่ใน `src/data/modulesData.ts`
+
+## ขึ้น GitHub + เปิดเว็บฟรี (GitHub Pages)
+
+```bash
+git init
+git add .
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/<ชื่อคุณ>/<ชื่อรีโป>.git
+git push -u origin main
+```
+
+จากนั้นที่รีโป: **Settings → Pages → Source เลือก "GitHub Actions"**
+ทุกครั้งที่ push เข้า `main` ระบบจะ build และอัปเดตเว็บให้เอง (ดูสถานะในแท็บ Actions)
+เว็บจะอยู่ที่ `https://<ชื่อคุณ>.github.io/<ชื่อรีโป>/`
