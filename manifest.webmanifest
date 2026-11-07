@@ -1,0 +1,30 @@
+{
+  "name": "Hatafuku Studio",
+  "short_name": "Hatafuku",
+  "description": "สตูดิโอสร้างใบงาน สติกเกอร์ ธีมไลน์ และเรียนภาษา",
+  "lang": "th",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fdf0f7",
+  "theme_color": "#ff7eb6",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

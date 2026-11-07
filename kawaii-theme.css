@@ -1,0 +1,21 @@
+/* Kawaii pastel theme: ชมพู / ม่วงลาเวนเดอร์ / ฟ้า / เหลืองเนย */
+:root:root:root{
+  color-scheme:light !important;
+  --bg:#fdf0f7 !important; --panel:#ffffff !important; --card-bg:rgba(255,255,255,.88) !important;
+  --line:#f6d3e6 !important; --bd:#f6d3e6 !important; --border:#f6d3e6 !important;
+  --tx:#3d3566 !important; --text:#3d3566 !important; --fg:#3d3566 !important;
+  --mu:#8b84b0 !important; --mut:#8b84b0 !important; --muted:#8b84b0 !important;
+  --ac:#ff7eb6 !important; --acc:#ff7eb6 !important; --primary:#ff6fae !important; --primary-hover:#f0559b !important;
+  --ac2:#a78bfa !important; --accent:#a78bfa !important;
+  --shadow-clay:0 14px 28px rgba(255,126,182,.20), inset 0 2px 4px rgba(255,255,255,.9) !important;
+  --sh:0 8px 22px rgba(255,126,182,.22) !important;
+}
+html,body{
+  background-color:#fdf0f7;
+  background-image:
+    radial-gradient(420px 320px at 8% 6%,rgba(255,170,210,.45),transparent 70%),
+    radial-gradient(460px 360px at 96% 14%,rgba(160,200,255,.45),transparent 70%),
+    radial-gradient(420px 340px at 12% 78%,rgba(200,170,255,.35),transparent 70%),
+    radial-gradient(380px 300px at 92% 92%,rgba(255,226,140,.40),transparent 70%);
+  background-attachment:fixed;
+}

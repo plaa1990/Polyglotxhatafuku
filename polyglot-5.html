@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PolyGlot Pro - Duolingo Edition (TTMIK)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Font: Kanit & Nunito -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Kanit', 'Nunito', 'sans-serif'],
+                    },
+                    colors: {
+                        duoGreen: '#58cc02',
+                        duoGreenDark: '#46a302',
+                        duoBlue: '#1cb0f6',
+                        duoBlueDark: '#1899d6',
+                        duoYellow: '#ffc800',
+                        duoYellowDark: '#dfb000',
+                        duoRed: '#ff4b4b',
+                        duoRedDark: '#ea2b2b',
+                        duoPurple: '#ce82ff',
+                        duoPurpleDark: '#b264ff',
+                        duoOrange: '#ff9600',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .shadow-duo {
+            box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.15);
+        }
+        .active-press:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.15);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 font-sans text-slate-800 dark:text-slate-100 select-none min-h-screen flex flex-col transition-colors duration-300 pb-20 md:pb-0">
+
+    <!-- Top Navigation Header (Duolingo Style) -->
+    <header class="bg-white dark:bg-slate-800 border-b-2 border-slate-200 dark:border-slate-700 sticky top-0 z-50 px-4 py-3 shadow-sm">
+        <div class="max-w-4xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-2xl bg-duoGreen flex items-center justify-center text-white font-extrabold text-xl shadow-duo">
+                    <i class="fa-solid fa-code"></i>
+                </div>
+                <span class="text-xl font-extrabold text-duoGreenDark tracking-wide hidden sm:inline">PolyGlot Pro <span class="text-xs bg-duoYellow text-slate-900 px-2 py-0.5 rounded-full">CS & Coding Duo</span></span>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="flex items-center space-x-4 text-sm font-extrabold">
+                <div class="flex items-center space-x-1.5 text-orange-500 bg-orange-50 dark:bg-orange-950/40 px-3 py-1.5 rounded-xl border border-orange-200 dark:border-orange-900 shadow-sm">
+                    <i class="fa-solid fa-fire text-lg"></i>
+                    <span id="statStreak">7</span>
+                </div>
+                <div class="flex items-center space-x-1.5 text-blue-500 bg-blue-50 dark:bg-blue-950/40 px-3 py-1.5 rounded-xl border border-blue-200 dark:border-blue-900 shadow-sm">
+                    <i class="fa-solid fa-gem text-lg"></i>
+                    <span id="statGems">420</span>
+                </div>
+                <div class="flex items-center space-x-1.5 text-red-500 bg-red-50 dark:bg-red-950/40 px-3 py-1.5 rounded-xl border border-red-200 dark:border-red-900 shadow-sm">
+                    <i class="fa-solid fa-heart text-lg"></i>
+                    <span id="statHearts">5</span>
+                </div>
+                <button onclick="app.toggleTheme()" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:scale-105 transition">
+                    <i id="themeIcon" class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace Container -->
+    <main class="flex-1 max-w-4xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 md:grid-cols-4 gap-6">
+        
+        <!-- Desktop Sidebar Navigation -->
+        <aside class="hidden md:flex flex-col space-y-2 col-span-1">
+            <button onclick="app.switchView('path')" id="nav-path" class="nav-btn flex items-center space-x-4 px-4 py-3 rounded-2xl font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition border-2 border-transparent">
+                <i class="fa-solid fa-map text-xl w-8 text-center text-duoGreen"></i>
+                <span>โรดแมป CS (0-5)</span>
+            </button>
+            <button onclick="app.switchView('vocab')" id="nav-vocab" class="nav-btn flex items-center space-x-4 px-4 py-3 rounded-2xl font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition border-2 border-transparent">
+                <i class="fa-solid fa-laptop-code text-xl w-8 text-center text-duoBlue"></i>
+                <span>คลังคำศัพท์ & โค้ด</span>
+            </button>
+            <button onclick="app.switchView('flashcard')" id="nav-flashcard" class="nav-btn flex items-center space-x-4 px-4 py-3 rounded-2xl font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition border-2 border-transparent">
+                <i class="fa-solid fa-clone text-xl w-8 text-center text-duoPurple"></i>
+                <span>แฟลชการ์ด CS</span>
+            </button>
+            <button onclick="app.switchView('grammar')" id="nav-grammar" class="nav-btn flex items-center space-x-4 px-4 py-3 rounded-2xl font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition border-2 border-transparent">
+                <i class="fa-solid fa-book-bookmark text-xl w-8 text-center text-emerald-500"></i>
+                <span>สรุปเนื้อหา 0-5</span>
+            </button>
+            <button onclick="app.switchView('chat')" id="nav-chat" class="nav-btn flex items-center space-x-4 px-4 py-3 rounded-2xl font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition border-2 border-transparent">
+                <i class="fa-solid fa-robot text-xl w-8 text-center text-amber-500"></i>
+                <span>AI ติวเตอร์ CS</span>
+            </button>
+            <button onclick="app.switchView('leaderboard')" id="nav-leaderboard" class="nav-btn flex items-center space-x-4 px-4 py-3 rounded-2xl font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition border-2 border-transparent">
+                <i class="fa-solid fa-trophy text-xl w-8 text-center text-duoYellow"></i>
+                <span>ลีดเดอร์บอร์ด</span>
+            </button>
+        </aside>
+
+        <!-- Center Dynamic View Area -->
+        <section class="col-span-1 md:col-span-3 bg-white dark:bg-slate-800 rounded-3xl border-2 border-slate-200 dark:border-slate-700 shadow-sm p-4 md:p-6 min-h-[600px] flex flex-col relative overflow-hidden transition-colors duration-300">
+            
+            <!-- VIEW 1: DUOLINGO PATH (Serpentine Learning Path) -->
+            <div id="view-path" class="view-content flex-1 flex flex-col">
+                <div class="bg-gradient-to-r from-duoGreen to-emerald-600 text-white p-6 rounded-3xl shadow-duo mb-8 flex items-center justify-between">
+                    <div>
+                        <span class="bg-white/20 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider">Computer Science & Coding</span>
+                        <h1 class="text-2xl font-extrabold mt-1">โรดแมปการเรียนรู้ ตั้งแต่ 0 ถึงระดับสูง</h1>
+                        <p class="text-white/90 text-xs mt-1">ฝึกฝนตามลำดับระดับ 0 ถึง 5 แบบ Duolingo</p>
+                    </div>
+                    <div class="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center text-3xl font-extrabold shadow-sm">
+                        💻
+                    </div>
+                </div>
+
+                <!-- Serpentine Path Container -->
+                <div id="duoPathContainer" class="flex-1 flex flex-col items-center space-y-8 py-4 overflow-y-auto max-h-[500px]">
+                    <!-- Rendered dynamically by JS in serpentine pattern -->
+                </div>
+            </div>
+
+            <!-- VIEW 2: VOCABULARY SETS -->
+            <div id="view-vocab" class="view-content hidden flex-1 flex flex-col">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-2xl font-extrabold"><i class="fa-solid fa-laptop-code text-duoBlue mr-2"></i> คลังคำศัพท์ & แนวคิด CS</h2>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm">รวบรวมคำศัพท์และหัวข้อจากทุกระดับ (0-5)</p>
+                    </div>
+                    <select id="vocabSetSelect" onchange="app.renderVocabTable()" class="bg-slate-100 dark:bg-slate-700 border-2 border-slate-300 dark:border-slate-600 rounded-xl px-3 py-2 text-sm font-bold">
+                        <option value="0">ระดับ 0: คอมฯ & Office</option>
+                        <option value="1">ระดับ 1: เริ่มต้นโค้ด (Python/HTML)</option>
+                        <option value="2">ระดับ 2: วิทยาการคอมฯ & SQL</option>
+                        <option value="3">ระดับ 3: OOP & ภาษาขั้นลึก</option>
+                        <option value="4">ระดับ 4: สายอาชีพ (Frontend/AI)</option>
+                        <option value="5" selected>ระดับ 5: คลาวด์ & สถาปัตยกรรม</option>
+                    </select>
+                </div>
+
+                <div class="flex-1 overflow-y-auto max-h-[440px] border-2 border-slate-200 dark:border-slate-700 rounded-2xl">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-100 dark:bg-slate-700 sticky top-0 text-xs uppercase tracking-wider">
+                            <tr>
+                                <th class="p-3">หัวข้อ / คำศัพท์</th>
+                                <th class="p-3">ประเภท / รายละเอียด</th>
+                                <th class="p-3">คำอธิบาย (ไทย)</th>
+                                <th class="p-3">ระดับ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vocabTableBody" class="divide-y divide-slate-200 dark:divide-slate-700 text-sm"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW 3: FLASHCARDS -->
+            <div id="view-flashcard" class="view-content hidden flex-1 flex flex-col items-center justify-center text-center">
+                <h2 class="text-2xl font-extrabold mb-2"><i class="fa-solid fa-clone text-duoPurple mr-2"></i> แฟลชการ์ด CS & โค้ดดิ้ง</h2>
+                <p class="text-slate-500 dark:text-slate-400 mb-8 text-sm">ทบทวนแนวคิดและคำสั่งสำคัญ</p>
+
+                <div onclick="app.flipFlashcard()" class="w-full max-w-md h-64 bg-gradient-to-br from-purple-500 to-indigo-600 text-white rounded-3xl shadow-xl flex flex-col items-center justify-center p-8 cursor-pointer transform transition hover:scale-105 active-press relative">
+                    <span class="absolute top-4 left-4 text-xs bg-white/20 px-3 py-1 rounded-full font-bold">แตะเพื่อพลิกดูคำตอบ</span>
+                    <div id="fcFront" class="text-2xl md:text-3xl font-extrabold mb-3">CPU / หน่วยประมวลผล</div>
+                    <div id="fcBack" class="hidden text-xl md:text-2xl font-bold text-duoYellow mt-2">สมองของคอมพิวเตอร์ ประมวลผลคำสั่งต่างๆ</div>
+                </div>
+
+                <div class="flex space-x-4 mt-8">
+                    <button onclick="app.nextFlashcard()" class="bg-duoPurple hover:bg-duoPurpleDark text-white font-bold px-8 py-3 rounded-2xl shadow-duo active-press transition">การ์ดถัดไป</button>
+                </div>
+            </div>
+
+            <!-- VIEW 4: GRAMMAR & STUDY GUIDE -->
+            <div id="view-grammar" class="view-content hidden flex-1 flex flex-col">
+                <h2 class="text-2xl font-extrabold mb-2"><i class="fa-solid fa-book-bookmark text-emerald-500 mr-2"></i> สรุปเนื้อหาทุกระดับ (0 ถึง 5)</h2>
+                <p class="text-slate-500 dark:text-slate-400 mb-6 text-sm">รายละเอียดเนื้อหาคอมพิวเตอร์และเขียนโค้ดตามโรดแมป</p>
+                <div id="grammarContent" class="space-y-4 flex-1 overflow-y-auto max-h-[440px] pr-2"></div>
+            </div>
+
+            <!-- VIEW 5: AI CHAT -->
+            <div id="view-chat" class="view-content hidden flex-1 flex flex-col h-[520px]">
+                <div class="flex items-center justify-between pb-4 border-b-2 border-slate-200 dark:border-slate-700 mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-2xl shadow-duo">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-extrabold">AI ติวเตอร์คอมพิวเตอร์ & โค้ด</h2>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">ถามตอบข้อสงสัยโค้ด ระบบปฏิบัติการ และอัลกอริทึม</p>
+                        </div>
+                    </div>
+                    <button onclick="app.resetAIChat()" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-xs font-bold px-3 py-2 rounded-xl transition">เริ่มใหม่</button>
+                </div>
+                <div id="aiChatMessages" class="flex-1 overflow-y-auto space-y-4 p-2 pr-4 mb-4"></div>
+                <div class="flex items-center space-x-2">
+                    <input type="text" id="aiChatInput" placeholder="พิมพ์ถามคำถามโค้ดหรือปัญหาคอมพิวเตอร์..." onkeypress="if(event.key==='Enter')app.sendAIChat()" class="flex-1 bg-slate-100 dark:bg-slate-700 border-2 border-slate-300 dark:border-slate-600 px-4 py-3 rounded-2xl text-sm focus:outline-none focus:border-amber-500">
+                    <button onclick="app.sendAIChat()" class="bg-amber-500 hover:bg-amber-600 text-white px-5 py-3 rounded-2xl font-bold shadow-duo active-press transition">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- VIEW 6: LEADERBOARD -->
+            <div id="view-leaderboard" class="view-content hidden flex-1 flex flex-col">
+                <div class="text-center mb-6">
+                    <div class="inline-block p-3 bg-amber-100 text-amber-600 rounded-3xl text-3xl mb-2 shadow-sm">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <h2 class="text-2xl font-extrabold">ลีดเดอร์บอร์ดผู้เรียน CS & Coding</h2>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">แข่งขันสะสม XP จากบทเรียนคอมพิวเตอร์</p>
+                </div>
+                <div id="leaderboardList" class="space-y-3 flex-1 overflow-y-auto max-h-[420px]"></div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- MOBILE BOTTOM NAVIGATION (Duolingo Style) -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t-2 border-slate-200 dark:border-slate-700 px-4 py-2 flex justify-around items-center z-50 shadow-lg">
+        <button onclick="app.switchView('path')" id="bm-path" class="flex flex-col items-center text-duoGreen font-bold text-xs space-y-1">
+            <i class="fa-solid fa-map text-xl"></i><span>โรดแมป</span>
+        </button>
+        <button onclick="app.switchView('vocab')" id="bm-vocab" class="flex flex-col items-center text-slate-400 font-bold text-xs space-y-1">
+            <i class="fa-solid fa-laptop-code text-xl"></i><span>คำศัพท์</span>
+        </button>
+        <button onclick="app.switchView('flashcard')" id="bm-flashcard" class="flex flex-col items-center text-slate-400 font-bold text-xs space-y-1">
+            <i class="fa-solid fa-clone text-xl"></i><span>การ์ด</span>
+        </button>
+        <button onclick="app.switchView('grammar')" id="bm-grammar" class="flex flex-col items-center text-slate-400 font-bold text-xs space-y-1">
+            <i class="fa-solid fa-book-bookmark text-xl"></i><span>เนื้อหา</span>
+        </button>
+        <button onclick="app.switchView('chat')" id="bm-chat" class="flex flex-col items-center text-slate-400 font-bold text-xs space-y-1">
+            <i class="fa-solid fa-robot text-xl"></i><span>AI</span>
+        </button>
+        <button onclick="app.switchView('leaderboard')" id="bm-leaderboard" class="flex flex-col items-center text-slate-400 font-bold text-xs space-y-1">
+            <i class="fa-solid fa-trophy text-xl"></i><span>จัดอันดับ</span>
+        </button>
+    </nav>
+
+    <!-- LESSON MODAL (Duolingo Style Screen) -->
+    <div id="lessonModal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 w-full max-w-xl rounded-3xl shadow-2xl p-6 md:p-8 flex flex-col max-h-[90vh] border-2 border-slate-200 dark:border-slate-700">
+            <div class="flex items-center justify-between mb-6">
+                <button onclick="app.closeLesson()" class="text-slate-400 hover:text-slate-600 text-xl font-extrabold">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <div class="flex-1 mx-4 bg-slate-200 dark:bg-slate-700 h-4 rounded-full overflow-hidden">
+                    <div id="lessonProgressBar" class="bg-duoGreen h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
+                </div>
+                <div class="flex items-center space-x-1 text-red-500 font-extrabold">
+                    <i class="fa-solid fa-heart"></i>
+                    <span id="lessonHearts">5</span>
+                </div>
+            </div>
+            <div id="lessonBody" class="flex-1 flex flex-col justify-between overflow-y-auto py-2"></div>
+        </div>
+    </div>
+
+    <!-- MESSAGE MODAL -->
+    <div id="msgModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 w-full max-w-sm rounded-3xl shadow-2xl p-6 text-center border-2 border-slate-200 dark:border-slate-700">
+            <div id="msgIcon" class="text-5xl mb-3 text-duoGreen"><i class="fa-solid fa-circle-check"></i></div>
+            <h3 id="msgTitle" class="text-2xl font-extrabold mb-2">ยอดเยี่ยมมาก!</h3>
+            <p id="msgText" class="text-slate-600 dark:text-slate-300 text-sm mb-6">คุณตอบคำถามถูกต้องได้รับ +30 XP</p>
+            <button onclick="app.closeMsgModal()" class="w-full bg-duoGreen hover:bg-duoGreenDark text-white font-extrabold py-3 rounded-2xl shadow-duo active-press transition">
+                ดำเนินการต่อ
+            </button>
+        </div>
+    </div>
+
+    <!-- SCRIPT LOGIC -->
+    <script>
+        const pathLessons = [
+            { id: 0, title: "ระดับ 0: ปูพื้นฐานคอมพิวเตอร์", desc: "ฮาร์ดแวร์, OS, ไฟล์, และ Office (Word/Excel)", type: "lesson", completed: true },
+            { id: 1, title: "ระดับ 1: เริ่มต้นเขียนโปรแกรม", desc: "Python เบื้องต้น, เงื่อนไข, วนซ้ำ, HTML & CSS", type: "lesson", completed: false },
+            { id: 2, title: "ระดับ 2: วิทยาการคอมพิวเตอร์", desc: "โครงสร้างข้อมูล, SQL, ระบบปฏิบัติการ, เครือข่าย & Git", type: "lesson", completed: false },
+            { id: 3, title: "ระดับ 3: เชี่ยวชาญภาษา & OOP", desc: "OOP, JavaScript, Java, C/C++, โค้ดสะอาด", type: "lesson", completed: false },
+            { id: 4, title: "ระดับ 4: เชี่ยวชาญสายอาชีพ", desc: "Frontend/Backend, Mobile, Data Science & AI", type: "lesson", completed: false },
+            { id: 5, title: "ระดับ 5: มืออาชีพ & คลาวด์", desc: "Cloud Computing, Docker, Microservices, Math", type: "lesson", completed: false }
+        ];
+
+        const vocabSets = {
+            0: [
+                { ko: "CPU", read: "ซีพียู", th: "หน่วยประมวลผลกลาง", cat: "ฮาร์ดแวร์" },
+                { ko: "RAM", read: "แรม", th: "หน่วยความจำหลัก", cat: "ฮาร์ดแวร์" },
+                { ko: "SSD / HDD", read: "เอสเอสดี / ฮาร์ดดิสก์", th: "หน่วยความจำสำรอง", cat: "ฮาร์ดแวร์" },
+                { ko: "OS", read: "ระบบปฏิบัติการ", th: "เช่น Windows, macOS, Linux", cat: "ระบบปฏิบัติการ" },
+                { ko: "IP Address", read: "ไอพีแอดเดรส", th: "หมายเลขประจำเครื่องบนเครือข่าย", cat: "อินเทอร์เน็ต" },
+                { ko: "URL", read: "ยูอาร์แอล", th: "ที่อยู่เว็บไซต์", cat: "อินเทอร์เน็ต" },
+                { ko: "=SUM()", read: "ซัม", th: "สูตรคำนวณผลรวมใน Excel", cat: "Microsoft Excel" },
+                { ko: "Pivot Table", read: "พิวอตเทเบิล", th: "ตารางสรุปข้อมูลขั้นสูงใน Excel", cat: "Microsoft Excel" }
+            ],
+            1: [
+                { ko: "Algorithm", read: "อัลกอริทึม", th: "ขั้นตอนวิธีแก้ปัญหา", cat: "แนวคิดก่อนเขียนโค้ด" },
+                { ko: "Flowchart", read: "ผังงาน", th: "แผนภาพแสดงขั้นตอนการทำงาน", cat: "แนวคิดก่อนเขียนโค้ด" },
+                { ko: "print('Hello')", read: "ปริ้นท์", th: "คำสั่งแสดงผลข้อมูลใน Python", cat: "Python" },
+                { ko: "if / else", read: "อีฟ / เอลส์", th: "คำสั่งตรวจสอบเงื่อนไข", cat: "Python" },
+                { ko: "for / while", read: "ฟอร์ / ไวล์", th: "คำสั่งวนซ้ำ", cat: "Python" },
+                { ko: "List / Dict", read: "ลิสต์ / ดิชันนารี", th: "โครงสร้างข้อมูลพื้นฐานใน Python", cat: "Python" },
+                { ko: "HTML Tag", read: "เอชทีเอ็มแอลแท็ก", th: "โครงสร้างหน้าเว็บเช่น <h1>, <p>", cat: "พื้นฐานเว็บไซต์" },
+                { ko: "CSS Box Model", read: "ซีเอสเอส บ็อกซ์โมเดล", th: "การจัดระยะ ขอบ และพื้นที่ขององค์ประกอบเว็บ", cat: "พื้นฐานเว็บไซต์" }
+            ],
+            2: [
+                { ko: "Array / Stack", read: "อาร์เรย์ / สแตก", th: "โครงสร้างข้อมูลพื้นฐาน", cat: "โครงสร้างข้อมูล" },
+                { ko: "Big O Notation", read: "บิ๊กโอ", th: "สัญกรณ์วิเคราะห์ประสิทธิภาพอัลกอริทึม", cat: "โครงสร้างข้อมูล" },
+                { ko: "SQL SELECT", read: "เอสคิวแอล ซีเลกต์", th: "คำสั่งดึงข้อมูลจากฐานข้อมูล", cat: "ฐานข้อมูล" },
+                { ko: "Primary Key", read: "คีย์หลัก", th: "รหัสระบุแถวข้อมูลที่ไม่ซ้ำกัน", cat: "ฐานข้อมูล" },
+                { ko: "Terminal / CLI", read: "เทอร์มินัล", th: "การสั่งงานผ่านบรรทัดคำสั่ง", cat: "ระบบปฏิบัติการ" },
+                { ko: "TCP / IP", read: "ทีซีพี / ไอพี", th: "โปรโตคอลการสื่อสารบนเครือข่าย", cat: "เครือข่าย" },
+                { ko: "Git Commit", read: "กิต คอมมิต", th: "บันทึกประวัติการเปลี่ยนแปลงโค้ด", cat: "เครื่องมือจำเป็น" },
+                { ko: "GitHub", read: "กิตฮับ", th: "แพลตฟอร์มฝากซอร์สโค้ดออนไลน์", cat: "เครื่องมือจำเป็น" }
+            ],
+            3: [
+                { ko: "OOP", read: "โอโอพี", th: "การเขียนโปรแกรมเชิงวัตถุ (Class & Object)", cat: "OOP" },
+                { ko: "Encapsulation", read: "การห่อหุ้ม", th: "หลักการปกป้องข้อมูลภายในคลาส", cat: "OOP" },
+                { ko: "Inheritance", read: "การสืบทอด", th: "การสร้างคลาสลูกจากคลาสแม่", cat: "OOP" },
+                { ko: "DOM", read: "ดอม", th: "การจัดการองค์ประกอบหน้าเว็บด้วย JavaScript", cat: "JavaScript" },
+                { ko: "Async / Fetch", read: "แอซิงค์ / เฟตช์", th: "การเรียกข้อมูลแบบไม่รอผลลัพธ์ทันที", cat: "JavaScript" },
+                { ko: "Pointer (C++)", read: "พอยเตอร์", th: "ตัวแปรเก็บตำแหน่งหน่วยความจำใน C++", cat: "C/C++" },
+                { ko: "DRY Principle", read: "ดราย พรินซิเพิล", th: "หลักการห้ามเขียนโค้ดซ้ำซ้อน", cat: "โค้ดที่ดี" }
+            ],
+            4: [
+                { ko: "React / Vue", read: "รีแอกต์ / วิว", th: "Frontend Framework ยอดนิยม", cat: "สายเว็บ" },
+                { ko: "RESTful API", read: "เรสท์ฟูล เอพีไอ", th: "มาตรฐานการสื่อสารระหว่างเว็บและเซิร์ฟเวอร์", cat: "สายเว็บ" },
+                { ko: "Flutter / React Native", read: "ฟลัตเตอร์", th: "พัฒนาแอปมือถือข้ามแพลตฟอร์ม", cat: "สายมือถือ" },
+                { ko: "Pandas / NumPy", read: "แพนดาส / นัมพาย", th: "ไลบรารี Python สำหรับจัดการและวิเคราะห์ข้อมูล", cat: "Data Science & AI" },
+                { ko: "Machine Learning", read: "แมชชีนเลิร์นนิง", th: "ระบบคอมพิวเตอร์เรียนรู้จากข้อมูล", cat: "Data Science & AI" },
+                { ko: "Software Lifecycle", read: "วงจรซอฟต์แวร์", th: "วางแผน -> ออกแบบ -> โค้ด -> ทดสอบ", cat: "วิศวกรรมซอฟต์แวร์" }
+            ],
+            5: [
+                { ko: "Cloud (AWS/GCP)", read: "คลาวด์", th: "IaaS, PaaS, SaaS บริการคอมพิวเตอร์ออนไลน์", cat: "Cloud Computing" },
+                { ko: "Docker Container", read: "ด็อกเกอร์", th: "จำลองสภาพแวดล้อมรันแอปพลิเคชันพกพา", cat: "Container" },
+                { ko: "Microservices", read: "ไมโครเซอร์วิส", th: "สถาปัตยกรรมแบ่งระบบใหญ่เป็นระบบย่อย", cat: "สถาปัตยกรรม" },
+                { ko: "Discrete Math", read: "คณิตศาสตร์ดิสครีต", th: "ตรรกศาสตร์ เซต กราฟ", cat: "คณิตศาสตร์" },
+                { ko: "Linear Algebra", read: "พีชคณิตเชิงเส้น", th: "เมทริกซ์ เวกเตอร์ สำหรับ AI และกราฟิก", cat: "คณิตศาสตร์" },
+                { ko: "Statistics", read: "สถิติและความน่าจะเป็น", th: "วิเคราะห์ข้อมูลและโมเดลความน่าจะเป็น", cat: "คณิตศาสตร์" }
+            ]
+        };
+
+        const flashcardsList = [
+            { front: "CPU คืออะไร?", back: "หน่วยประมวลผลกลาง สมองหลักของคอมพิวเตอร์" },
+            { front: "คำสั่งแสดงผลใน Python คืออะไร?", back: "print() เช่น print('Hello World')" },
+            { front: "Big O Notation ใช้ทำอะไร?", back: "วิเคราะห์ประสิทธิภาพ ความเร็ว และหน่วยความจำของอัลกอริทึม" },
+            { front: "OOP ย่อมาจากอะไร?", back: "Object-Oriented Programming (การเขียนโปรแกรมเชิงวัตถุ)" },
+            { front: "Git Commit ทำหน้าที่อะไร?", back: "บันทึกประวัติการเปลี่ยนแปลงโค้ดในโปรเจกต์" },
+            { front: "Docker คืออะไร?", back: "เครื่องมือสร้างคอนเทนเนอร์สำหรับรันแอปพลิเคชันทุกที่ได้อย่างเสถียร" }
+        ];
+
+        const grammarGuideData = [
+            { title: "🟢 ระดับ 0 — ปูพื้นฐานคอมพิวเตอร์", desc: "ฮาร์ดแวร์ (CPU, RAM, SSD), ระบบปฏิบัติการ (Windows, การจัดการไฟล์), อินเทอร์เน็ต (IP, DNS, HTTPS), และโปรแกรมสำนักงาน (Word, Excel สูตร SUM/IF, PowerPoint)" },
+            { title: "🟡 ระดับ 1 — เริ่มต้นเขียนโปรแกรม", desc: "การคิดเชิงตรรกะ ผังงาน (Flowchart), ภาษา Python (ตัวแปร, if/else, loop, list, function), และพื้นฐานเว็บไซต์ (HTML tags, CSS Box Model)" },
+            { title: "🟠 ระดับ 2 — พื้นฐานวิทยาการคอมพิวเตอร์", desc: "โครงสร้างข้อมูล (Array, Stack, Tree), ฐานข้อมูล SQL (SELECT, INSERT, JOIN), ระบบปฏิบัติการ (CLI), เครือข่าย (TCP/IP), และเครื่องมือ Git & GitHub" },
+            { title: "🔴 ระดับ 3 — เชี่ยวชาญภาษา & โค้ดลึกซึ้ง", desc: "การเขียนโปรแกรมเชิงวัตถุ (OOP 4 เสาหลัก), เจาะลึก JavaScript (DOM, Fetch), Java, C/C++ (Pointer), และหลักการเขียนโค้ดสะอาด (Clean Code, DRY)" },
+            { title: "🔵 ระดับ 4 — เชี่ยวชาญสายอาชีพ", desc: "สายเว็บ (React, API), สายมือถือ (Flutter, Kotlin), สาย Data Science & AI (Pandas, NumPy, Machine Learning), และวิศวกรรมซอฟต์แวร์" },
+            { title: "🟣 ระดับ 5 — เชี่ยวชาญระดับมืออาชีพ", desc: "Cloud Computing (AWS/GCP), Docker & Kubernetes, Microservices Architecture, และคณิตศาสตร์สำหรับคอมพิวเตอร์ (Discrete Math, Linear Algebra, Statistics)" }
+        ];
+
+        let state = {
+            streak: 7,
+            gems: 420,
+            hearts: 5,
+            xp: 950,
+            darkMode: false,
+            activeLessonIdx: null,
+            questionIdx: 0,
+            fcIdx: 0,
+            isFlipped: false
+        };
+
+        const app = {
+            init() {
+                this.renderDuoPath();
+                this.renderVocabTable();
+                this.renderGrammar();
+                this.renderLeaderboard();
+                this.initAIChat();
+                this.updateStats();
+            },
+
+            toggleTheme() {
+                state.darkMode = !state.darkMode;
+                document.documentElement.classList.toggle('dark', state.darkMode);
+                document.getElementById('themeIcon').className = state.darkMode ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            },
+
+            switchView(viewName) {
+                document.querySelectorAll('.view-content').forEach(el => el.classList.add('hidden'));
+                document.getElementById(`view-${viewName}`).classList.remove('hidden');
+
+                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('bg-slate-100', 'dark:bg-slate-800'));
+                const activeNav = document.getElementById(`nav-${viewName}`);
+                if (activeNav) activeNav.classList.add('bg-slate-100', 'dark:bg-slate-800');
+
+                document.querySelectorAll('nav.md\\:hidden button').forEach(b => b.classList.remove('text-duoGreen', 'font-extrabold'));
+                document.querySelectorAll('nav.md\\:hidden button').forEach(b => b.classList.add('text-slate-400'));
+                const bmBtn = document.getElementById(`bm-${viewName}`);
+                if (bmBtn) {
+                    bmBtn.classList.remove('text-slate-400');
+                    bmBtn.classList.add('text-duoGreen', 'font-extrabold');
+                }
+            },
+
+            renderDuoPath() {
+                const container = document.getElementById('duoPathContainer');
+                container.innerHTML = '';
+                
+                const offsets = ['translate-x-0', 'translate-x-16', 'translate-x-24', 'translate-x-12', '-translate-x-12', '-translate-x-24'];
+
+                pathLessons.forEach((item, idx) => {
+                    const offsetClass = offsets[idx % offsets.length];
+                    const isUnlocked = idx === 0 || pathLessons[idx - 1].completed;
+                    const isCompleted = item.completed;
+
+                    let bgCircle = 'bg-slate-300 dark:bg-slate-700 text-slate-500 border-b-4 border-slate-400';
+                    let icon = '<i class="fa-solid fa-lock"></i>';
+                    let clickable = '';
+
+                    if (isCompleted) {
+                        bgCircle = 'bg-duoYellow text-white border-b-4 border-duoYellowDark cursor-pointer hover:scale-110';
+                        icon = '<i class="fa-solid fa-star text-2xl"></i>';
+                        clickable = `onclick="app.startLesson(${idx})"`;
+                    } else if (isUnlocked) {
+                        bgCircle = 'bg-duoGreen text-white border-b-4 border-duoGreenDark cursor-pointer hover:scale-110 animate-pulse';
+                        icon = '<i class="fa-solid fa-star text-2xl"></i>';
+                        clickable = `onclick="app.startLesson(${idx})"`;
+                    }
+
+                    container.innerHTML += `
+                        <div class="flex flex-col items-center transform ${offsetClass} transition duration-300">
+                            <div ${clickable} class="w-20 h-20 rounded-full ${bgCircle} flex items-center justify-center shadow-lg transition active-press relative">
+                                ${icon}
+                            </div>
+                            <div class="mt-2 text-center bg-white dark:bg-slate-800 px-3 py-1 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm max-w-[180px]">
+                                <div class="text-xs font-extrabold truncate">${item.title}</div>
+                                <div class="text-[10px] text-slate-500 truncate">${item.desc}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+            },
+
+            renderVocabTable() {
+                const setId = document.getElementById('vocabSetSelect').value;
+                const list = vocabSets[setId] || [];
+                const tbody = document.getElementById('vocabTableBody');
+                tbody.innerHTML = '';
+                list.forEach(v => {
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+                            <td class="p-3 font-extrabold text-duoGreenDark dark:text-emerald-400">${v.ko}</td>
+                            <td class="p-3 text-slate-500">${v.read}</td>
+                            <td class="p-3 font-bold">${v.th}</td>
+                            <td class="p-3 text-xs"><span class="bg-slate-100 dark:bg-slate-700 px-2.5 py-1 rounded-lg">${v.cat}</span></td>
+                        </tr>
+                    `;
+                });
+            },
+
+            renderGrammar() {
+                const container = document.getElementById('grammarContent');
+                container.innerHTML = '';
+                grammarGuideData.forEach(g => {
+                    container.innerHTML += `
+                        <div class="bg-emerald-50/50 dark:bg-slate-700/40 border-2 border-emerald-200 dark:border-emerald-900/50 p-5 rounded-3xl shadow-sm">
+                            <h4 class="font-extrabold text-duoGreenDark dark:text-emerald-400 text-base mb-1">${g.title}</h4>
+                            <p class="text-sm text-slate-600 dark:text-slate-300">${g.desc}</p>
+                        </div>
+                    `;
+                });
+            },
+
+            flipFlashcard() {
+                state.isFlipped = !state.isFlipped;
+                const card = flashcardsList[state.fcIdx];
+                document.getElementById('fcFront').innerText = state.isFlipped ? card.back : card.front;
+                document.getElementById('fcFront').classList.toggle('text-duoYellow', state.isFlipped);
+            },
+
+            nextFlashcard() {
+                state.fcIdx = (state.fcIdx + 1) % flashcardsList.length;
+                state.isFlipped = false;
+                document.getElementById('fcFront').innerText = flashcardsList[state.fcIdx].front;
+                document.getElementById('fcFront').classList.remove('text-duoYellow');
+            },
+
+            startLesson(idx) {
+                state.activeLessonIdx = idx;
+                state.questionIdx = 0;
+                document.getElementById('lessonModal').classList.remove('hidden');
+                this.renderLessonTip(idx); // แสดงหน้าจอสอนเนื้อหาก่อนเริ่มแบบทดสอบ
+            },
+
+            renderLessonTip(idx) {
+                const lesson = pathLessons[idx];
+                const guide = grammarGuideData[idx] || { title: lesson.title, desc: lesson.desc };
+                document.getElementById('lessonProgressBar').style.width = `0%`;
+                document.getElementById('lessonHearts').innerText = state.hearts;
+
+                document.getElementById('lessonBody').innerHTML = `
+                    <div class="flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="inline-block p-3 bg-emerald-100 text-duoGreen rounded-2xl text-2xl mb-3 shadow-sm">
+                                <i class="fa-solid fa-book-open"></i>
+                            </div>
+                            <span class="text-xs bg-duoGreen/10 text-duoGreen px-3 py-1 rounded-full font-extrabold">บทเรียนก่อนทำแบบทดสอบ</span>
+                            <h3 class="text-2xl font-extrabold my-3">${lesson.title}</h3>
+                            <div class="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-600 mb-4">
+                                <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">${guide.desc}</p>
+                            </div>
+                            <div class="bg-amber-50 dark:bg-amber-950/30 p-3 rounded-xl border border-amber-200 dark:border-amber-900 text-xs text-amber-700 dark:text-amber-300 font-bold flex items-center space-x-2">
+                                <i class="fa-solid fa-lightbulb text-base"></i>
+                                <span>เคล็ดลับ: อ่านทบทวนทำความเข้าใจก่อนกดปุ่มเริ่มทำแบบฝึกหัดด้านล่างเพื่อสะสม XP!</span>
+                            </div>
+                        </div>
+                        <button onclick="app.renderLessonQ()" class="w-full bg-duoGreen hover:bg-duoGreenDark text-white font-extrabold py-4 rounded-2xl shadow-duo active-press transition mt-6 text-base">
+                            เริ่มทำแบบฝึกหัด <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                `;
+            },
+
+            renderLessonQ() {
+                const qs = [
+                    { q: "ส่วนใดคือสมองหลักในการประมวลผลของคอมพิวเตอร์?", opts: ["RAM", "CPU", "Hard Disk", "Power Supply"], ans: 1 },
+                    { q: "คำสั่งใดใช้แสดงผลข้อความในภาษา Python?", opts: ["echo", "console.log", "print()", "printf"], ans: 2 },
+                    { q: "คำสั่ง SQL ใดใช้สำหรับดึงข้อมูลจากตาราง?", opts: ["INSERT", "SELECT", "UPDATE", "DELETE"], ans: 1 }
+                ];
+                const q = qs[state.questionIdx % qs.length];
+                document.getElementById('lessonProgressBar').style.width = `${((state.questionIdx)/3)*100}%`;
+                document.getElementById('lessonHearts').innerText = state.hearts;
+
+                let optsHtml = '';
+                q.opts.forEach((o, i) => {
+                    optsHtml += `<button onclick="app.checkAns(${i}, ${q.ans})" class="w-full text-left bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 border-2 border-slate-300 dark:border-slate-600 font-bold p-4 rounded-2xl transition mb-3">${o}</button>`;
+                });
+
+                document.getElementById('lessonBody').innerHTML = `
+                    <div>
+                        <span class="text-xs bg-emerald-100 text-duoGreen px-3 py-1 rounded-full font-extrabold">คำถามที่ ${state.questionIdx + 1} / 3</span>
+                        <h3 class="text-xl font-extrabold my-4">${q.q}</h3>
+                        <div class="space-y-2 mt-4">${optsHtml}</div>
+                    </div>
+                `;
+            },
+
+            checkAns(selected, correct) {
+                if (selected === correct) {
+                    state.xp += 30;
+                    this.showMsg('ถูกต้องเยี่ยมมาก!', '+30 XP', 'fa-circle-check', 'text-duoGreen');
+                } else {
+                    state.hearts--;
+                    this.showMsg('ยังไม่ถูกต้อง', 'พยายามใหม่อีกครั้ง', 'fa-circle-xmark', 'text-red-500');
+                }
+                state.questionIdx++;
+                if (state.questionIdx >= 3) {
+                    pathLessons[state.activeLessonIdx].completed = true;
+                    if (state.activeLessonIdx + 1 < pathLessons.length) {
+                        pathLessons[state.activeLessonIdx + 1].completed = false;
+                    }
+                    setTimeout(() => {
+                        this.closeLesson();
+                        this.renderDuoPath();
+                        this.showMsg('จบบทเรียนสำเร็จ!', 'ปลดล็อกด่านถัดไปเรียบร้อย', 'fa-trophy', 'text-duoYellow');
+                    }, 800);
+                } else {
+                    setTimeout(() => {
+                        this.closeMsgModal();
+                        this.renderLessonQ();
+                    }, 800);
+                }
+                this.updateStats();
+            },
+
+            closeLesson() {
+                document.getElementById('lessonModal').classList.add('hidden');
+            },
+
+            initAIChat() {
+                document.getElementById('aiChatMessages').innerHTML = `
+                    <div class="flex items-start space-x-3">
+                        <div class="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-bold"><i class="fa-solid fa-robot"></i></div>
+                        <div class="bg-slate-100 dark:bg-slate-700 p-3.5 rounded-2xl text-sm max-w-md">
+                            สวัสดีครับ! ผมคือ AI ติวเตอร์ CS & Coding ยินดีตอบคำถามเรื่องคอมพิวเตอร์ โค้ด Python, SQL, OOP หรือคลาวด์ครับ!
+                        </div>
+                    </div>
+                `;
+            },
+
+            sendAIChat() {
+                const input = document.getElementById('aiChatInput');
+                const text = input.value.trim();
+                if (!text) return;
+                const container = document.getElementById('aiChatMessages');
+                container.innerHTML += `<div class="flex items-start justify-end space-x-3"><div class="bg-amber-500 text-white p-3.5 rounded-2xl text-sm max-w-md">${text}</div></div>`;
+                input.value = '';
+                container.scrollTop = container.scrollHeight;
+
+                setTimeout(() => {
+                    container.innerHTML += `
+                        <div class="flex items-start space-x-3">
+                            <div class="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-bold"><i class="fa-solid fa-robot"></i></div>
+                            <div class="bg-slate-100 dark:bg-slate-700 p-3.5 rounded-2xl text-sm max-w-md">
+                                คำถามยอดเยี่ยมมากครับ! การเรียนรู้คอมพิวเตอร์ต้องอาศัยการลงมือทำและฝึกฝนอย่างสม่ำเสมอ ลองเขียนโค้ดเพิ่มเติมดูนะครับ 👍
+                            </div>
+                        </div>
+                    `;
+                    container.scrollTop = container.scrollHeight;
+                }, 800);
+            },
+
+            resetAIChat() { this.initAIChat(); },
+
+            renderLeaderboard() {
+                const list = document.getElementById('leaderboardList');
+                const users = [
+                    { rank: 1, name: "Jirapha Yoon", xp: 2150, flag: "🥇" },
+                    { rank: 2, name: "Alan Turing", xp: 1850, flag: "🥈" },
+                    { rank: 3, name: "คุณ (ผู้เรียน CS Roadmap)", xp: state.xp, flag: "⭐", self: true },
+                    { rank: 4, name: "Ada Lovelace", xp: 1200, flag: "4" }
+                ];
+                list.innerHTML = '';
+                users.forEach(u => {
+                    list.innerHTML += `
+                        <div class="flex items-center justify-between p-4 rounded-2xl border-2 ${u.self ? 'bg-emerald-50 dark:bg-emerald-950/30 border-duoGreen' : 'bg-slate-50 dark:bg-slate-700/40 border-slate-200 dark:border-slate-700'}">
+                            <div class="flex items-center space-x-4">
+                                <span class="font-extrabold text-lg w-6 text-center">${u.flag}</span>
+                                <div><h4 class="font-bold">${u.name}</h4><span class="text-xs text-slate-500">CS & Coding League</span></div>
+                            </div>
+                            <span class="font-extrabold text-duoYellowDark">${u.xp} XP</span>
+                        </div>
+                    `;
+                });
+            },
+
+            updateStats() {
+                document.getElementById('statStreak').innerText = state.streak;
+                document.getElementById('statGems').innerText = state.gems;
+                document.getElementById('statHearts').innerText = state.hearts;
+            },
+
+            showMsg(title, text, icon, color) {
+                document.getElementById('msgTitle').innerText = title;
+                document.getElementById('msgText').innerText = text;
+                const el = document.getElementById('msgIcon');
+                el.className = `text-5xl mb-3 ${color}`;
+                el.innerHTML = `<i class="fa-solid ${icon}"></i>`;
+                document.getElementById('msgModal').classList.remove('hidden');
+            },
+
+            closeMsgModal() { document.getElementById('msgModal').classList.add('hidden'); }
+        };
+
+        window.onload = () => { app.init(); };
+    </script>
+</body>
+</html>

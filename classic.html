@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<meta name="theme-color" content="#ff7eb6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Hatafuku">
+<link rel="stylesheet" href="kawaii-theme.css">
+<title>Studio ขาย+เรียน (สตูดิโอรวมเดิม)</title>
+<style>
+:root{--bg:#fff7f0;--fg:#2b2330;--card:#fff;--ac:#ff7a59;--mu:#7a6f80;--bd:#f0dfd2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#1d1822;--fg:#f3ecf5;--card:#2a2330;--mu:#a89cb0;--bd:#3a3042}}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;font-family:system-ui,"Noto Sans Thai",sans-serif;background:var(--bg);color:var(--fg);line-height:1.5}
+header{padding:16px;font-weight:700;font-size:20px}
+nav{display:flex;gap:6px;overflow-x:auto;padding:0 12px 10px}
+nav button{white-space:nowrap;border:1px solid var(--bd);background:var(--card);color:var(--fg);border-radius:20px;padding:8px 14px;font-size:14px}
+nav button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+main{padding:0 14px 40px;max-width:720px;margin:auto}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px}
+select,input,textarea,button.b{width:100%;padding:10px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--fg);font:inherit;margin:4px 0}
+button.b{background:var(--ac);color:#fff;border:0;font-weight:600}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.big{font-size:34px;text-align:center;padding:24px 0}
+.mu{color:var(--mu);font-size:13px}
+canvas{width:100%;max-width:370px;border-radius:12px;background:repeating-conic-gradient(#ddd 0 25%,#fff 0 50%) 0 0/20px 20px;display:block;margin:auto}
+.ws{background:#fff;color:#000;padding:14px;border-radius:8px}
+.ws .ln{border-bottom:1px dashed #aaa;height:34px;display:flex;align-items:flex-end;gap:14px;font-size:22px;color:#ccc}
+.ph{border-radius:14px;overflow:hidden;border:1px solid var(--bd);max-width:260px;margin:8px auto}
+.opt{display:block;width:100%;text-align:left;margin:4px 0;padding:10px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--fg);font:inherit}
+i.cb{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border:1px solid #c66;font-style:normal;font-size:32px;background:linear-gradient(to right,transparent 49%,#ecc 49% 51%,transparent 51%),linear-gradient(transparent 49%,#ecc 49% 51%,transparent 51%),linear-gradient(to top right,transparent 49.5%,#f3dede 49.5% 50.5%,transparent 50.5%),linear-gradient(to bottom right,transparent 49.5%,#f3dede 49.5% 50.5%,transparent 50.5%)}
+.fl{height:56px;line-height:54px;font-size:32px;white-space:nowrap;overflow:hidden;background:linear-gradient(#999,#999) 0 6px/100% 1px no-repeat,linear-gradient(#e99,#e99) 0 22px/100% 1px no-repeat,linear-gradient(#999,#999) 0 38px/100% 1px no-repeat,linear-gradient(#999,#999) 0 54px/100% 1px no-repeat;margin-top:8px}
+@media print{body *{visibility:hidden}.ws,.ws *{visibility:visible}.ws{position:absolute;inset:0}}
+
+/* ---- redesign ---- */
+:root{--ac2:#ff4f81;--sh:0 6px 20px rgba(255,122,89,.14)}
+body{background:radial-gradient(1200px 400px at 50% -100px,rgba(255,122,89,.18),transparent),var(--bg)}
+header{position:relative;margin:12px 14px 6px;padding:18px 18px;border-radius:20px;color:#fff;font-size:20px;letter-spacing:.2px;background:linear-gradient(135deg,var(--ac),var(--ac2));box-shadow:var(--sh)}
+header small{display:block;font-weight:400;font-size:12.5px;opacity:.9;margin-top:2px}
+nav{position:sticky;top:0;z-index:5;padding:8px 12px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{border-radius:999px;transition:.15s;font-weight:500}
+nav button.on{background:linear-gradient(135deg,var(--ac),var(--ac2));box-shadow:var(--sh)}
+.card{border-radius:18px;box-shadow:0 2px 10px rgba(60,30,50,.05)}
+button.b{background:linear-gradient(135deg,var(--ac),var(--ac2));border-radius:12px;padding:12px;transition:transform .1s}
+button.b:active,.tile:active{transform:scale(.97)}
+select,input,textarea{border-radius:12px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--ac);outline-offset:0}
+.sec{font-weight:700;font-size:15px;margin:18px 2px 8px;display:flex;align-items:center;gap:8px}
+.sec:after{content:"";flex:1;height:1px;background:var(--bd)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px 6px;min-height:92px;border:1px solid var(--bd);border-radius:18px;background:var(--card);color:var(--fg);font:inherit;font-size:13px;font-weight:600;text-align:center;box-shadow:var(--sh);transition:.12s}
+.tile i{font-style:normal;font-size:30px;line-height:1}
+.tile.w{grid-column:1/-1;flex-direction:row;justify-content:flex-start;padding:14px 16px;min-height:0;gap:12px;font-size:14px;background:linear-gradient(135deg,var(--card),color-mix(in srgb,var(--ac) 12%,var(--card)))}
+.tile.w i{font-size:26px}.tile.w span{display:block;font-weight:400;font-size:12px;color:var(--mu)}
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hero .tile{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;border:0;min-height:84px}
+@media(min-width:600px){.tiles{grid-template-columns:repeat(4,1fr)}}
+
+/* ---- embedded full apps ---- */
+#sub{display:none;gap:6px;align-items:center;overflow-x:auto;padding:6px 12px;position:sticky;top:var(--nh,0px);z-index:4;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--bd);scrollbar-width:none}
+#sub::-webkit-scrollbar{display:none}
+#sub button{white-space:nowrap;border:1px solid var(--bd);background:var(--card);color:var(--fg);border-radius:999px;padding:5px 11px;font-size:12.5px}
+#sub button.on{border-color:var(--ac);color:var(--ac);font-weight:700}
+#sub a{margin-left:auto;white-space:nowrap;color:var(--ac);font-size:12.5px;text-decoration:none;padding-left:8px}
+#fr{position:fixed;left:0;right:0;bottom:0;top:var(--ft,0px);display:none}
+#fr iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff;display:none}
+body.emb{overflow:hidden}body.emb header,body.emb main{display:none}body.emb #fr{display:block}
+@media print{#fr,#sub{display:none!important}}
+</style><style id="kawaii-hub">
+:root:root:root{--card:rgba(255,255,255,.86) !important}
+body{font-family:"Quicksand","Noto Sans Thai",system-ui,sans-serif}
+header{background:linear-gradient(135deg,#ff8fc2 0%,#b79cff 55%,#8ccbff 100%) !important;border-radius:26px !important;box-shadow:0 10px 26px rgba(183,156,255,.35) !important;overflow:hidden;text-shadow:0 1px 2px rgba(120,60,140,.25)}
+header::before,header::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.28);pointer-events:none}
+header::before{width:90px;height:90px;right:-18px;top:-26px}
+header::after{width:46px;height:46px;right:64px;bottom:-16px;background:rgba(255,236,150,.55)}
+nav{background:rgba(255,246,251,.82) !important;border-bottom:1px solid #f6d3e6}
+nav button{background:rgba(255,255,255,.9) !important;border:1.5px solid #f6d3e6 !important;color:#6a5a9a !important}
+nav button.on{background:linear-gradient(135deg,#ff7eb6,#a78bfa) !important;border-color:transparent !important;color:#fff !important;box-shadow:0 6px 16px rgba(167,139,250,.35) !important}
+.card{background:rgba(255,255,255,.86) !important;border:1.5px solid #f8dcec !important;border-radius:24px !important;box-shadow:0 8px 24px rgba(255,126,182,.12) !important;backdrop-filter:blur(8px)}
+button.b{background:linear-gradient(135deg,#ff7eb6,#a78bfa) !important;border-radius:16px !important;box-shadow:0 6px 16px rgba(255,126,182,.28)}
+select,input,textarea,.opt{border:1.5px solid #f6d3e6 !important;border-radius:14px !important;background:#fff !important;color:#3d3566 !important}
+.mu{color:#8b84b0 !important}
+#kw-install{position:fixed;right:14px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:50;display:none;border:0;border-radius:999px;padding:12px 18px;font:600 14px/1 inherit;font-family:inherit;color:#fff;background:linear-gradient(135deg,#ff7eb6,#a78bfa);box-shadow:0 10px 24px rgba(167,139,250,.45)}
+#kw-hint{position:fixed;left:12px;right:12px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:51;display:none;background:#fff;border:1.5px solid #f6d3e6;border-radius:20px;padding:12px 14px;font-size:13px;color:#3d3566;box-shadow:0 10px 24px rgba(255,126,182,.25)}
+</style>
+</head><body>
+<header>🎨 Studio ขายงาน + เรียนรู้<small>เมนูหลัก · ใบงาน สติกเกอร์ ธีมไลน์ และแอพเรียนรู้ครบในที่เดียว</small></header>
+<nav id="nav"></nav>
+<div id="sub"></div>
+<main id="m"></main>
+<div id="fr"></div>
+<script src="./hatafuku/jszip.min.js"></script>
+<script src="./hatafuku/html2canvas.min.js"></script>
+<script>
+const $=s=>document.querySelector(s),L={en:'English',th:'ไทย',zh:'中文',ja:'日本語',ko:'한국어'};
+let pend='';
+const tabs=[["home","🏠 หน้าแรก"],["ws","📄 ใบงาน"],["st","✨ สติกเกอร์ 3D"],["th","💬 ธีมไลน์"],["ty","⌨️ พิมพ์ดีด"],["lg","🌏 ภาษา"],["cd","💻 โปรแกรม"],["lo","🚚 โลจิสติกส์"],["mods","🧩 โมดูลอื่น"]];
+/* แต่ละแท็บฝังแอปเต็มจริงด้วย iframe (null = หน้าในตัวของไฟล์นี้) */
+const H="./hatafuku/";
+const EMB={
+ws:[["🧩 Hatafuku Studio",H+"index.html"],["✍️ คัดลายมือ 5 ภาษา",H+"handwriting.html"],["🧮 คณิตคิดเร็ว",H+"math-worksheet.html"],["🌀 เขาวงกต",H+"maze-studio.html"],["🔤 อักษรไขว้",H+"crossword-studio.html"],["🔢 ต่อจุด",H+"dot-to-dot.html"],["📝 ใบงานด่วน + เพิ่มเติม",null]],
+st:[["🎈 ตัวอักษรลูกโป่ง 3D",H+"balloons.html"],["🖼️ Mockup 3D",H+"mockup-3d.html"],["👾 Creator Studio",H+"creator-studio.html"]],
+th:[["💬 LINE Theme & Sticker",H+"line-theme.html"]],
+ty:[["⌨️ ฝึกพิมพ์สัมผัส",H+"typing.html"]],
+lg:[["🌐 PolyGlot Pro","./polyglot.html"],["🌐 PolyGlot ฉบับ 5","./polyglot-5.html"],["🈯 เกาหลี/ญี่ปุ่น/TTS",H+"extras.html"]],
+cd:[["⚔️ CodeQuest RPG",H+"codequest.html"],["▶️ Code Runner",H+"code-runner.html"]],
+lo:[["🚚 Hatafuku โลจิสติกส์","./logistics.html"]]
+};
+const FR={},sub={};
+function fit(){const r=document.documentElement,n=$('#nav').getBoundingClientRect(),s=$('#sub');r.style.setProperty('--nh',n.height+'px');r.style.setProperty('--ft',(s.style.display=='flex'?s.getBoundingClientRect().bottom:n.bottom)+'px')}
+addEventListener('resize',fit);addEventListener('orientationchange',fit);
+const opts=o=>Object.entries(o).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
+let cur='home';
+function go(t,s){cur=t;if(s!=null)sub[t]=s;const E=EMB[t],si=sub[t]||0,u=E&&E[si][1];
+$('#nav').innerHTML=tabs.map(([k,n])=>`<button class="${k==t?'on':''}" onclick="go('${k}')">${n}</button>`).join('');
+{const nv=$('#nav'),a=nv.querySelector('.on');if(a)nv.scrollLeft=a.offsetLeft-nv.clientWidth/2+a.offsetWidth/2}
+const sb=$('#sub');if(E){sb.innerHTML=E.map(([n],i)=>`<button class="${i==si?'on':''}" onclick="go('${t}',${i})">${n}</button>`).join('')+(u?`<a href="${u}" target="_blank" rel="noopener">เปิดแท็บใหม่ ↗</a>`:'');sb.style.display=(E.length>1||u)?'flex':'none'}else{sb.style.display='none'}
+document.body.classList.toggle('emb',!!u);scrollTo(0,0);
+document.querySelectorAll('#fr iframe').forEach(f=>f.style.display='none');
+if(u){let f=FR[u];if(!f){f=FR[u]=document.createElement('iframe');f.setAttribute('allow','fullscreen;clipboard-write;microphone;autoplay');f.title=u;f.src=u;$('#fr').appendChild(f)}f.style.display='block';$('#m').innerHTML=''}
+else{$('#m').innerHTML=R[t]();(I[t]||(()=>{}))()}
+requestAnimationFrame(fit)}
+const R={
+ws:()=>`<div class="card"><input id="wh" value="แบบฝึกคัดลายมือ"><div class="grid"><select id="wl">${opts(L)}</select><select id="wm"><option value="trace">คัดตามรอย</option><option value="scramble">เรียงตัวอักษร</option><option value="fill">เติมตัวอักษร</option><option value="match">จับคู่คำกับความหมาย</option><option value="cross">อักษรไขว้ (คำ=คำใบ้)</option><option value="bingo">บิงโก (8+ คำ)</option><option value="maze">เขาวงกต (บรรทัดแรก=ขนาด 5-25)</option><option value="math">โจทย์คณิต (บรรทัดแรก=เลขสูงสุด)</option></select></div><textarea id="wt" rows="4" placeholder="พิมพ์คำศัพท์ บรรทัดละ 1 คำ (โหมดจับคู่: คำ=ความหมาย)"></textarea><input id="wf" placeholder="ชื่อร้าน/ลิขสิทธิ์ (ท้ายใบงาน)"><button class="b" onclick="mkws()">สร้างใบงาน</button><button class="b" onclick="print()">พิมพ์ / บันทึก PDF</button><button class="b" onclick="wz()">📦 ชุดใบงาน ZIP (ทุกโหมด PNG+HTML)</button><button class="b" onclick="mk3()">🖼️ ภาพปก mockup 3D</button><p class="mu" id="wm2"></p><p class="mu">จีน/ญี่ปุ่น/เกาหลี = ช่องกากบาท · อังกฤษ/ไทย = เส้น 4 ชั้น</p></div><div class="ws" id="wo"></div>`};
+const I={};
+let sc=0;
+const rn=n=>Math.random()*n|0,sh=a=>{a=a.slice();for(let j=a.length-1;j>0;j--){const r=rn(j+1);[a[j],a[r]]=[a[r],a[j]]}return a};
+const EX={
+math:R=>{const mx=+R[0]||20,p=[],k=[];for(let i=0;i<20;i++){const a=rn(mx)+1,b=rn(mx)+1,t=rn(4);let s,r;if(t==0){s=a+' + '+b;r=a+b}else if(t==1){s=Math.max(a,b)+' − '+Math.min(a,b);r=Math.abs(a-b)}else if(t==2){const x=rn(11)+1,y=rn(11)+1;s=x+' × '+y;r=x*y}else{const y=rn(11)+1,q=rn(11)+1;s=y*q+' ÷ '+y;r=q}p.push('<div style="width:50%;display:inline-block;font-size:22px;margin:10px 0">'+(i+1)+'. '+s+' = ______</div>');k.push(r)}return p.join('')+'<p style="font-size:12px;margin-top:16px">เฉลย: '+k.map((v,i)=>(i+1)+'. '+v).join(' · ')+'</p>'},
+bingo:(R,w)=>{const n=w.length>=24?5:w.length>=8?3:0;if(!n)return'<p>ไม่พบคำพอ: ต้องมีอย่างน้อย 8 คำ (5×5 ใช้ 24 คำ)</p>';const c=n*n-1,p=sh(w).slice(0,c);p.splice(c>>1,0,'FREE');return'<div style="display:grid;grid-template-columns:repeat('+n+',1fr);border:2px solid #000;margin-top:10px">'+p.map(x=>'<div style="border:1px solid #000;aspect-ratio:1;display:flex;align-items:center;justify-content:center;text-align:center;font-size:'+(n==5?16:22)+'px;padding:2px">'+x+'</div>').join('')+'</div>'},
+maze:R=>{const N=Math.min(25,Math.max(5,+R[0]||12)),A=()=>Array.from({length:N},()=>Array(N).fill(1)),v=Array.from({length:N},()=>Array(N).fill(0)),E=A(),S=A(),st=[[0,0]];v[0][0]=1;
+while(st.length){const[x,y]=st[st.length-1],nb=[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>[x+dx,y+dy,dx,dy]).filter(([a,b])=>a>=0&&b>=0&&a<N&&b<N&&!v[b][a]);if(!nb.length){st.pop();continue}const[a,b,dx,dy]=nb[rn(nb.length)];if(dx==1)E[y][x]=0;if(dx==-1)E[b][a]=0;if(dy==1)S[y][x]=0;if(dy==-1)S[b][a]=0;v[b][a]=1;st.push([a,b])}
+const pv={},q=[[0,0]],sn=new Set([0]);while(q.length){const[x,y]=q.shift(),nx=[];if(!E[y][x])nx.push([x+1,y]);if(x>0&&!E[y][x-1])nx.push([x-1,y]);if(y<N-1&&!S[y][x])nx.push([x,y+1]);if(y>0&&!S[y-1][x])nx.push([x,y-1]);nx.forEach(([a,b])=>{if(!sn.has(b*N+a)){sn.add(b*N+a);pv[b*N+a]=[x,y];q.push([a,b])}})}
+let c=[N-1,N-1];const pts=[];while(c){pts.push(c);c=pv[c[1]*N+c[0]]}
+const C=28,P=4,d=sol=>{let l='';for(let y=0;y<N;y++)for(let x=0;x<N;x++){const X=P+x*C,Y=P+y*C;if(E[y][x])l+='M'+(X+C)+' '+Y+'v'+C;if(S[y][x]&&!(y==N-1&&x==N-1))l+='M'+X+' '+(Y+C)+'h'+C;if(x==0)l+='M'+X+' '+Y+'v'+C;if(y==0&&x>0)l+='M'+X+' '+Y+'h'+C}
+const T=P*2+N*C;return'<svg viewBox="0 0 '+T+' '+T+'" style="width:'+(sol?'260px':'100%')+';max-width:100%"><path d="'+l+'" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/>'+(sol?'<polyline points="'+pts.map(p=>(P+p[0]*C+C/2)+','+(P+p[1]*C+C/2)).join(' ')+'" fill="none" stroke="#e33" stroke-width="3"/>':'')+'</svg>'};
+return'<div style="text-align:center">'+d(0)+'</div><p style="font-size:13px">เริ่ม: มุมซ้ายบน → ออก: มุมขวาล่าง</p><details style="margin-top:10px"><summary>เฉลย</summary>'+d(1)+'</details>'},
+cross:(R,w)=>{const P=R.map(s=>s.split('=')).filter(p=>p[0].trim()).map(p=>({ch:Array.from(p[0].trim().toUpperCase()),c:(p[1]||'').trim()})).filter(p=>p.ch.length>1).sort((a,b)=>b.ch.length-a.ch.length);if(P.length<2)return'<p>ไม่พบคำพอ: ใส่อย่างน้อย 2 คำ (รูปแบบ คำ=คำใบ้)</p>';
+const run=od=>{const g=new Map(),pl=[],pd=new Set([od[0]]),gt=(x,y)=>g.get(x+','+y),ok=(ch,x,y,dx,dy)=>{if(gt(x-dx,y-dy)||gt(x+dx*ch.length,y+dy*ch.length))return 0;let c=0,e=0;for(let i=0;i<ch.length;i++){const X=x+dx*i,Y=y+dy*i,t=gt(X,Y);if(t){if(t!=ch[i])return 0;c++}else{e++;if(gt(X+dy,Y+dx)||gt(X-dy,Y-dx))return 0}}return c>0&&e>0},put=(p,x,y,dx,dy)=>{p.ch.forEach((c,i)=>g.set((x+dx*i)+','+(y+dy*i),c));pl.push({...p,x,y,dx,dy})};
+put(od[0],0,0,1,0);
+for(let ps=0;ps<2;ps++)od.slice(1).forEach(p=>{if(pd.has(p))return;let done=0;for(const[k,c]of[...g]){if(done)break;const[x,y]=k.split(',').map(Number);for(let i=0;i<p.ch.length&&!done;i++)if(p.ch[i]==c)for(const[dx,dy]of[[1,0],[0,1]])if(!done&&ok(p.ch,x-dx*i,y-dy*i,dx,dy)){put(p,x-dx*i,y-dy*i,dx,dy);pd.add(p);done=1}}});
+return{g,pl}};
+let best=null;for(let t=0;t<80;t++){const r=run(t?[P[0],...sh(P.slice(1))]:P);if(!best||r.pl.length>best.pl.length)best=r}
+const{g,pl}=best;
+const nm={};let n=0;[...pl].sort((a,b)=>a.y-b.y||a.x-b.x).forEach(p=>{const k=p.x+','+p.y;if(!nm[k])nm[k]=++n;p.n=nm[k]});
+const ks=[...g.keys()].map(k=>k.split(',').map(Number)),x0=Math.min(...ks.map(k=>k[0])),x1=Math.max(...ks.map(k=>k[0])),y0=Math.min(...ks.map(k=>k[1])),y1=Math.max(...ks.map(k=>k[1]));
+const gr=s=>{let h='<table style="border-collapse:collapse;margin:8px auto">';for(let y=y0;y<=y1;y++){h+='<tr>';for(let x=x0;x<=x1;x++){const k=x+','+y,c=g.get(k);h+=c?'<td style="border:1px solid #000;width:34px;height:34px;position:relative;text-align:center;font-size:20px;padding:0">'+(nm[k]?'<small style="position:absolute;top:0;left:2px;font-size:9px">'+nm[k]+'</small>':'')+(s?c:'')+'</td>':'<td style="width:34px;height:34px"></td>'}h+='</tr>'}return h+'</table>'};
+const cl=f=>pl.filter(f).sort((a,b)=>a.n-b.n).map(p=>'<p style="margin:3px 0">'+p.n+'. '+(p.c||'('+p.ch.length+' ตัวอักษร)')+'</p>').join('');
+return gr(0)+'<div style="display:flex;gap:24px;font-size:14px"><div><b>แนวนอน</b>'+cl(p=>p.dx)+'</div><div><b>แนวตั้ง</b>'+cl(p=>p.dy)+'</div></div>'+(P.length>pl.length?'<p style="font-size:12px">วางลงตารางไม่ได้ '+(P.length-pl.length)+' คำ</p>':'')+'<details style="margin-top:10px"><summary>เฉลย</summary>'+gr(1)+'</details>'}
+};
+function mkws(){const lg=$('#wl').value,m=$('#wm').value,cjk='zh ja ko'.includes(lg),R=$('#wt').value.split('\n').map(s=>s.trim()).filter(Boolean),w=R.map(s=>s.split('=')[0].trim()),key=[],sg=s=>Array.from(s);
+let o=`<h3 style="margin:0 0 6px">${$('#wh').value} — ${L[lg]}</h3><div style="margin-bottom:8px">ชื่อ ____________ วันที่ ________</div>`;
+if(EX[m]){o+=EX[m](R,w)}else if(m=='match'){const P=R.map(s=>s.split('=')).filter(p=>p[1]),sh=P.map(p=>p[1].trim()),A='ABCDEFGHIJKLMNOPQRSTUVWXYZ';for(let j=sh.length-1;j>0;j--){const r=Math.random()*(j+1)|0;[sh[j],sh[r]]=[sh[r],sh[j]]}o+=P.length?'':'<p>ไม่พบคู่คำ (ใช้รูปแบบ คำ=ความหมาย)</p>';o+=`<div style="display:flex;justify-content:space-between;font-size:22px;margin-top:10px"><div>${P.map((p,i)=>`<p>${i+1}. ${p[0].trim()}</p>`).join('')}</div><div>${sh.map((s,i)=>`<p>${A[i]}. ${s}</p>`).join('')}</div></div>`;P.forEach(p=>key.push(A[sh.indexOf(p[1].trim())]))}else w.forEach((x,i)=>{const a=sg(x);
+if(m=='trace'){if(cjk){let c=a.map(q=>`<i class="cb" style="color:#000">${q}</i>`).join('')+a.map(q=>`<i class="cb" style="color:#ccc">${q}</i>`).join('');for(let j=a.length*2;j<8;j++)c+='<i class="cb"></i>';o+=`<div style="margin-top:8px">${c}</div>`}
+else o+=`<div class="fl"><b>${x}</b><span style="color:#ccc"> ${x} ${x} ${x}</span></div><div class="fl"></div>`}
+else if(m=='scramble'){const b=a.slice();for(let j=b.length-1;j>0;j--){const r=Math.random()*(j+1)|0;[b[j],b[r]]=[b[r],b[j]]}key.push(x);o+=`<div style="display:flex;gap:10px;align-items:flex-end;font-size:26px;letter-spacing:5px;margin-top:14px">${i+1}. ${b.join(' ')}<span style="flex:1;border-bottom:1px solid #000;height:30px"></span></div>`}
+else{const b=a.slice();b[Math.random()*b.length|0]='＿';key.push(x);o+=`<div style="display:flex;gap:10px;align-items:flex-end;font-size:26px;margin-top:14px">${i+1}. ${b.join('')}<span style="flex:1;border-bottom:1px solid #000;height:30px"></span></div>`}});
+if(key.length)o+=`<p style="margin-top:20px;font-size:12px">เฉลย: ${key.map((k,i)=>i+1+'. '+k).join(' · ')}</p>`;if($('#wf').value)o+=`<p style="margin-top:14px;font-size:11px;color:#888;text-align:center">© ${$('#wf').value}</p>`;$('#wo').innerHTML=o}
+function mix(h,t){const n=parseInt(h.slice(1),16);return`rgb(${[n>>16,n>>8&255,n&255].map(v=>Math.round(t>0?v+(255-v)*t:v*(1+t)))})`}
+function dr(c=$('#cv'),t=$('#sx').value||'Hi'){const x=c.getContext('2d'),k=$('#sc').value,rb=$('#rb').checked,ch=Array.from(t),pal=['#ff5a7a','#ffb02e','#ffd21f','#3fc95a','#3fa0ff','#9b6bff'];
+const tm=document.createElement('canvas').getContext('2d');tm.font='900 120px system-ui,"Noto Sans Thai",sans-serif';let fs=Math.min(120,120*290/Math.max(1,tm.measureText(t).width));const f=`900 ${fs}px system-ui,"Noto Sans Thai",sans-serif`;tm.font=f;
+let px=185-tm.measureText(t).width/2;const it=ch.map((q,i)=>{const w=tm.measureText(q).width,r=[q,px,rb?pal[i%6]:k];px+=w;return r});
+x.clearRect(0,0,370,320);x.font=f;x.textAlign='left';x.textBaseline='middle';x.lineJoin='round';
+x.save();x.filter='blur(6px)';x.strokeStyle='rgba(0,0,0,.4)';x.lineWidth=26;it.forEach(i=>x.strokeText(i[0],i[1]+4,168));x.restore();
+x.strokeStyle='#fff';x.lineWidth=26;it.forEach(i=>x.strokeText(i[0],i[1],160));
+const o=document.createElement('canvas');o.width=370;o.height=320;const q=o.getContext('2d');q.font=f;q.textAlign='left';q.textBaseline='middle';q.lineJoin='round';
+it.forEach(i=>{q.strokeStyle=mix(i[2],-.4);q.lineWidth=12;q.strokeText(i[0],i[1],160);const g=q.createLinearGradient(0,160-fs/2,0,160+fs/2);g.addColorStop(0,mix(i[2],.5));g.addColorStop(.5,i[2]);g.addColorStop(1,mix(i[2],-.2));q.fillStyle=g;q.fillText(i[0],i[1],160)});
+q.globalCompositeOperation='source-atop';q.strokeStyle='rgba(255,255,255,.7)';q.lineWidth=5;it.forEach(i=>q.strokeText(i[0],i[1]-4,156));
+x.drawImage(o,0,0)}
+async function pk(){const T_=$('#sl').value.split('\n').map(s=>s.trim()).filter(Boolean);if(!T_.length){$('#pm').textContent='พิมพ์ข้อความของชุดสติกเกอร์ก่อน (บรรทัดละ 1 ภาพ)';return}
+if(!window.JSZip){$('#pm').textContent='โหลดตัวสร้าง ZIP ไม่สำเร็จ ตรวจอินเทอร์เน็ตแล้วลองใหม่';return}
+const z=new JSZip(),cs=T_.map(t=>{const c=document.createElement('canvas');c.width=370;c.height=320;dr(c,t);return c}),bl=c=>new Promise(r=>c.toBlob(r)),ft=(w,h)=>{const o=document.createElement('canvas');o.width=w;o.height=h;const s=Math.min(w/370,h/320);o.getContext('2d').drawImage(cs[0],(w-370*s)/2,(h-320*s)/2,370*s,320*s);return o};
+for(let i=0;i<cs.length;i++)z.file(String(i+1).padStart(2,'0')+'.png',await bl(cs[i]));
+z.file('main.png',await bl(ft(240,240)));z.file('tab.png',await bl(ft(96,74)));
+const co=4,pv=document.createElement('canvas');pv.width=co*370;pv.height=Math.ceil(cs.length/co)*320;const q=pv.getContext('2d');q.fillStyle='#fff';q.fillRect(0,0,pv.width,pv.height);cs.forEach((c,i)=>q.drawImage(c,i%co*370,Math.floor(i/co)*320));
+const wm=$('#sw').value;if(wm){q.save();q.globalAlpha=.18;q.fillStyle='#000';q.font='bold 60px system-ui,"Noto Sans Thai",sans-serif';q.rotate(-.5);for(let y=0;y<pv.height*2;y+=200)for(let x=-600;x<pv.width;x+=500)q.fillText(wm,x,y);q.restore()}
+z.file('preview-for-listing.png',await bl(pv));
+const a=document.createElement('a');a.download='sticker-set.zip';a.href=URL.createObjectURL(await z.generateAsync({type:'blob'}));a.click();
+$('#pm').textContent='สร้างแล้ว '+cs.length+' ภาพ (main 240×240, tab 96×74)'+([8,16,24,32,40].includes(cs.length)?'':' · จำนวนภาพของชุด LINE มักต้องเป็น 8/16/24/32/40 ตรวจเงื่อนไขล่าสุดที่ LINE Creators Market')}
+async function tp(){const m=$('#tm');if(!window.JSZip){m.textContent='โหลดตัวสร้าง ZIP ไม่สำเร็จ ตรวจอินเทอร์เน็ตแล้วลองใหม่';return}
+const c1=$('#c1').value,c2=$('#c2').value,c3=$('#c3').value,nm=$('#tn').value||'Theme',z=new JSZip(),bl=c=>new Promise(r=>c.toBlob(r)),mk=(w,h,f)=>{const c=document.createElement('canvas');c.width=w;c.height=h;f(c.getContext('2d'),w,h);return c},
+th=(x,w,h)=>{x.fillStyle=c2;x.fillRect(0,0,w,h);x.fillStyle=c1;x.fillRect(0,0,w,h*.2);x.fillStyle='#fff';x.beginPath();x.roundRect(w*.08,h*.3,w*.55,h*.1,h*.05);x.fill();x.fillStyle=c3;x.beginPath();x.roundRect(w*.37,h*.45,w*.55,h*.1,h*.05);x.fill();x.fillStyle=c1;x.textAlign='center';x.font='bold '+w*.09+'px system-ui,"Noto Sans Thai",sans-serif';x.fillText(nm,w/2,h*.8,w*.9)},
+ps=on=>(x,w,h)=>{x.fillStyle=c2;x.fillRect(0,0,w,h);x.beginPath();x.arc(w/2,h/2,w*.3,0,7);if(on){x.fillStyle=c1;x.fill()}else{x.lineWidth=w*.06;x.strokeStyle=c1;x.stroke()}},
+pf=g=>(x,w,h)=>{x.fillStyle=c3;x.fillRect(0,0,w,h);x.fillStyle=c1;const dt=(a,b,r)=>{x.beginPath();x.arc(a,b,r,0,7);x.fill()};if(g){dt(w*.3,h*.42,w*.14);dt(w*.7,h*.42,w*.14);dt(w*.5,h*.35,w*.17);x.fillRect(w*.2,h*.62,w*.6,h*.22)}else{dt(w/2,h*.38,w*.2);x.beginPath();x.ellipse(w/2,h*.85,w*.34,h*.26,0,Math.PI,0);x.fill()}},
+bg=(x,w,h)=>{x.fillStyle=c2;x.fillRect(0,0,w,h);x.fillStyle=c3;x.globalAlpha=.35;for(let i=0;i<40;i++){x.beginPath();x.arc(i*137%w,i*251%h,20+i%5*8,0,7);x.fill()}x.globalAlpha=1},
+J=[['ios_thumbnail',200,284,th],['android_thumbnail',136,202,th],['store_thumbnail',198,278,th],['i_20',240,240,pf(0)],['a_20',247,247,pf(0)],['i_21',240,240,pf(1)],['a_21',247,247,pf(1)],['i_22',1482,1334,bg],['a_22',1300,1300,bg]];
+for(let d=0;d<4;d++)[0,1].forEach(on=>{const k=12+d*2+on;J.push(['i_'+k,120,120,ps(on)],['a_'+k,116,116,ps(on)])});
+for(const[n,w,h,f]of J)z.file(n+'.png',await bl(mk(w,h,f)));
+z.file('README.txt','ชุดภาพธีม LINE (สร้างจากสี 3 จุดของแอพ)\nรวม: A. thumbnail 3 ไฟล์ · D. ภาพรหัสผ่าน 16 ไฟล์ (i_12-i_19 / a_12-a_19) · E. ภาพโปรไฟล์ (i_20,a_20 บุคคล / i_21,a_21 กลุ่ม) · F. ภาพพื้นหลังแชท (i_22,a_22 ไม่บังคับ)\nไม่รวม: B. ปุ่มเมนู (18 ภาพ 80x56) · C. ภาพพื้นหลังเมนู · ไอคอนเมนูใหม่ของ iOS 26 และรายการอื่นตามคู่มือ ต้องทำเพิ่มเอง\nข้อความ: ชื่อธีม ไม่เกิน 40 · คำอธิบาย ไม่เกิน 160 · ผู้สร้าง ไม่เกิน 50 · ลิขสิทธิ์ ไม่เกิน 50 (ตัวอักษรเต็มตัวนับเป็น 2, ห้ามอีโมจิ) · ไฟล์ภาพไม่เกิน 1MB\nอ้างอิง: https://creator.line.me/en/guideline/theme/detail/ (ตรวจสเปกล่าสุดก่อนส่งตรวจ)\n');
+const a=document.createElement('a');a.download='line-theme-images.zip';a.href=URL.createObjectURL(await z.generateAsync({type:'blob'}));a.click();m.textContent='สร้างแล้ว '+J.length+' ไฟล์ — ภาพเป็นแบบเรียบจากสีที่เลือก ยังไม่ครบทุกภาพที่ LINE ต้องการ (ดู README ใน ZIP)'}
+async function wz(){const m=$('#wm2');if(!window.JSZip||!window.html2canvas){m.textContent='โหลดไลบรารีไม่สำเร็จ ตรวจอินเทอร์เน็ตแล้วลองใหม่';return}
+if(!$('#wt').value.trim()){m.textContent='พิมพ์คำศัพท์ก่อน';return}
+const sel=$('#wm'),cur=sel.value,z=new JSZip(),css=document.querySelector('style').textContent;let n=0;
+for(const o of[...sel.options]){sel.value=o.value;mkws();const wo=$('#wo');if(!wo.textContent.trim()||wo.textContent.includes('ไม่พบ'))continue;m.textContent='กำลังสร้าง: '+o.text;const cv=await html2canvas(wo,{backgroundColor:'#fff',scale:2});z.file(o.value+'.png',await new Promise(r=>cv.toBlob(r)));z.file(o.value+'.html','<meta charset="utf-8"><style>'+css+'</style><div class="ws">'+wo.innerHTML+'</div>');n++}
+sel.value=cur;mkws();const a=document.createElement('a');a.download='worksheet-set.zip';a.href=URL.createObjectURL(await z.generateAsync({type:'blob'}));a.click();m.textContent='สร้างแล้ว '+n+' โหมด (ข้ามโหมดที่ข้อมูลไม่พอ)'}
+async function mk3(){const m=$('#wm2');if(!window.html2canvas){m.textContent='โหลดไลบรารีไม่สำเร็จ';return}
+if(!$('#wo').textContent.trim())mkws();if(!$('#wo').textContent.trim()){m.textContent='พิมพ์คำศัพท์ก่อน';return}
+const s=await html2canvas($('#wo'),{backgroundColor:'#fff',scale:1.5}),c=document.createElement('canvas');c.width=1200;c.height=900;const x=c.getContext('2d'),g=x.createLinearGradient(0,0,1200,900);g.addColorStop(0,'#ffe9dc');g.addColorStop(1,'#ffd0e0');x.fillStyle=g;x.fillRect(0,0,1200,900);
+const h=560,w=h*s.width/s.height;[[-.16,-150,40],[.1,150,60],[-.03,0,90]].forEach(([r,dx,dy])=>{x.save();x.translate(600+dx,470+dy);x.rotate(r);x.shadowColor='rgba(0,0,0,.3)';x.shadowBlur=30;x.shadowOffsetY=14;x.drawImage(s,-w/2,-h/2,w,h);x.restore()});
+x.fillStyle='#2b2330';x.textAlign='center';x.font='bold 56px system-ui,"Noto Sans Thai",sans-serif';x.fillText($('#wh').value||'Worksheet',600,90,1100);x.font='28px system-ui,"Noto Sans Thai",sans-serif';if($('#wf').value)x.fillText($('#wf').value,600,860,1100);
+const a=document.createElement('a');a.download='mockup-cover.png';a.href=c.toDataURL();a.click();m.textContent='สร้างภาพปกแล้ว (1200×900)'}
+function dl(){const a=document.createElement('a');a.download='sticker.png';a.href=$('#cv').toDataURL();a.click()}
+function pv(){$('#p1').style.background=$('#c1').value;$('#p2').style.background=$('#c2').value;$('#p3').style.background=$('#c3').value}
+
+const MODS0=[["🚀 แอพหลัก", "🧩", "Hatafuku Studio 2.0 (สตูดิโอหลัก)", "./hatafuku/index.html"], ["🚀 แอพหลัก", "🌐", "PolyGlot Pro — Duolingo Edition", "./polyglot.html"], ["🚀 แอพหลัก", "🌐", "PolyGlot Pro (ฉบับ 5)", "./polyglot-5.html"], ["🚀 แอพหลัก", "🚚", "Hatafuku โลจิสติกส์ (ดูโอลิงโกะ)", "./logistics.html"], ["🚀 แอพหลัก", "📦", "Standalone Studio (สำรอง)", "./hatafuku/standalone-index.html"], ["🚀 แอพหลัก", "🗂️", "Hatafuku Studio 2.0 (สำรองเต็ม)", "./hatafuku/hatafuku-studio-2.0.html"], ["📄 ใบงาน", "✍️", "คัดลายมือ 5 ภาษา", "./hatafuku/handwriting.html"], ["🧠 ปริศนา/เกม", "🌀", "สตูดิโอเขาวงกต", "./hatafuku/maze-studio.html"], ["🧠 ปริศนา/เกม", "🔤", "สตูดิโออักษรไขว้", "./hatafuku/crossword-studio.html"], ["🧠 ปริศนา/เกม", "🔢", "ต่อจุด 1-50", "./hatafuku/dot-to-dot.html"], ["🧠 ปริศนา/เกม", "🎮", "มินิเกมคำศัพท์ 4 เกม", "./hatafuku/minigames.html"], ["🧠 ปริศนา/เกม", "⌨️", "ฝึกพิมพ์สัมผัส (WPM)", "./hatafuku/typing.html"], ["🎨 ศิลปะ/ขาย", "🎈", "ตัวอักษรลูกโป่ง 3D", "./hatafuku/balloons.html"], ["🎨 ศิลปะ/ขาย", "👾", "Creator Studio (พิกเซล/Sprite/8-bit)", "./hatafuku/creator-studio.html"], ["🎨 ศิลปะ/ขาย", "💬", "LINE Theme & Sticker (เต็ม)", "./hatafuku/line-theme.html"], ["🎨 ศิลปะ/ขาย", "🖌️", "Draw Studio (เลเยอร์)", "./hatafuku/draw-studio.html"], ["🎨 ศิลปะ/ขาย", "✏️", "วาดรูปด่วน", "./hatafuku/draw.html"], ["🎨 ศิลปะ/ขาย", "🖼️", "Mockup 3D ภาพปกขาย", "./hatafuku/mockup-3d.html"], ["🎨 ศิลปะ/ขาย", "🎨", "สตูดิโอวาดรูปคลาสสิก", "./hatafuku/studio.html"], ["💻 เรียนรู้", "⚔️", "CodeQuest RPG เรียนโค้ด", "./hatafuku/codequest.html"], ["💻 เรียนรู้", "▶️", "Code Runner (JS/Python/SQL)", "./hatafuku/code-runner.html"], ["💻 เรียนรู้", "📚", "คลังบทเรียนศิลปะ", "./hatafuku/lessons.html"], ["💻 เรียนรู้", "🈯", "เครื่องมือเสริม เกาหลี/ญี่ปุ่น/TTS", "./hatafuku/extras.html"]];
+const MODS=MODS0.filter(m=>!Object.values(EMB).some(a=>a.some(e=>e[1]==m[3]))&&m[3]!="./hatafuku/hatafuku-studio-2.0.html"&&m[3]!="./hatafuku/standalone-index.html");
+R.mods=()=>{let g='';return `<div class="card"><b>🧩 โมดูลอื่น (${MODS.length})</b><p class="mu">โมดูลที่ไม่ได้อยู่ในแท็บหลัก กดเพื่อเปิดในหน้านี้ มีปุ่มกลับเมนู</p><input id="mq" placeholder="🔍 ค้นหาโมดูล" oninput="mf()"></div><div id="ml">`+MODS.map((m,i)=>(m[0]!=g?(g=m[0],`<p class="mu" data-g style="margin:14px 0 4px"><b>${g}</b></p>`):'')+`<button class="b" data-n="${m[2].toLowerCase()}" onclick="mo(${i})" style="text-align:left;margin:4px 0">${m[1]} ${m[2]}</button>`).join('')+'</div>'};
+function mf(){const q=$('#mq').value.toLowerCase();document.querySelectorAll('#ml button').forEach(b=>b.style.display=b.dataset.n.includes(q)?'':'none');document.querySelectorAll('#ml [data-g]').forEach(p=>{let n=p.nextElementSibling,v=0;while(n&&!n.hasAttribute('data-g')){if(n.style.display!='none')v=1;n=n.nextElementSibling}p.style.display=v?'':'none'})}
+function mo(i){const m=MODS[i];let o=$('#ov');if(!o){o=document.createElement('div');o.id='ov';o.style.cssText='position:fixed;inset:0;z-index:99;background:var(--bg);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)';o.innerHTML='<div style="display:flex;gap:8px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--bd)"><button onclick="mc()" style="border:0;background:var(--ac);color:#fff;border-radius:18px;padding:8px 14px;font:inherit;font-weight:600">← เมนู</button><b id="ot" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px"></b><a id="oa" target="_blank" style="color:var(--ac);font-size:13px">เปิดแท็บใหม่ ↗</a></div><iframe id="of" style="flex:1;border:0;width:100%;background:#fff" allow="fullscreen;clipboard-write;microphone;autoplay"></iframe>';document.body.appendChild(o)}o.style.display='flex';$('#ot').textContent=m[1]+' '+m[2];$('#oa').href=m[3];$('#of').src=m[3];document.body.style.overflow='hidden'}
+function mc(){$('#ov').style.display='none';$('#of').src='about:blank';document.body.style.overflow=''}
+
+R.home=()=>{const t=k=>tabs.find(x=>x[0]==k),tile=k=>{const[,n]=t(k),p=n.split(' ');return `<button class="tile" onclick="go('${k}')"><i>${p[0]}</i>${p.slice(1).join(' ')}</button>`};
+return `<div class="sec">💼 ทำงานขาย</div><div class="tiles">${['ws','st','th'].map(tile).join('')}</div>
+<div class="sec">📚 ฝึกเรียน</div><div class="tiles">${['ty','lg','cd','lo'].map(tile).join('')}</div>`};
+go('home')
+</script><script>
+const XW={thai:{n:`🇹🇭 คัดพยัญชนะ-สระไทย`,h:`<div class="clay-card p-5 space-y-4">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs font-bold text-pink-950">
+        <div>
+          <label class="block mb-1">เลือกชุดแบบฝึกคัด</label>
+          <select id="sel-group" class="w-full p-2.5 rounded-xl border border-pink-300 bg-white font-semibold">
+            <option value="g1" selected>ชุดที่ 1: ก ไก่ ถึง ง งู (ก, ข, ฃ, ค, ฅ, ฆ, ง)</option>
+            <option value="g2">ชุดที่ 2: จ จาน ถึง ญ หญิง (จ, ฉ, ช, ซ, ฌ, ญ)</option>
+            <option value="g3">ชุดที่ 3: ด เด็ก ถึง น หนู (ด, ต, ถ, ท, ธ, น)</option>
+            <option value="g4">ชุดที่ 4: บ ใบไม้ ถึง ม ม้า (บ, ป, ผ, ฝ, พ, ฟ, ภ, ม)</option>
+            <option value="g5">ชุดที่ 5: ย ยักษ์ ถึง ฮ นกฮูก (ย, ร, ล, ว, ศ, ษ, ส, ห, ฬ, อ, ฮ)</option>
+            <option value="vowels">สระภาษาไทยพื้นฐาน (ะ, า, ิ, ี, ึ, ื, ุ, ู)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block mb-1">หัวข้อใบงาน</label>
+          <input type="text" id="ipt-title" value="แบบฝึกคัดลายมือภาษาไทย: พยัญชนะไทย" class="w-full p-2.5 rounded-xl border border-pink-300 bg-white font-semibold" />
+        </div>
+
+        <div>
+          <label class="block mb-1">ความเข้มเส้นประนำคัด</label>
+          <select id="sel-opacity" class="w-full p-2.5 rounded-xl border border-pink-300 bg-white font-semibold">
+            <option value="0.25">จาง (ฝึกเขียนเอง)</option>
+            <option value="0.35" selected>ปานกลาง (กำลังดี)</option>
+            <option value="0.55">เข้มชัดเจน (สำหรับเริ่มฝึก)</option>
+          </select>
+        </div>
+      </div>
+    </div><button class="b" id="btn-print">🖨️ พิมพ์ใบงาน A4</button>`,s:`
+    <div class="a4-page" id="sheet-thai">
+      <div style="border-bottom: 2px dashed #f472b6; padding-bottom: 12px; margin-bottom: 16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h2 id="view-title" style="font-size: 22px; font-weight: 900; color: #831843; margin:0;">แบบฝึกคัดลายมือภาษาไทย: พยัญชนะไทย</h2>
+            <p style="font-size: 11px; color: #9d174d; margin: 4px 0 0 0;">คำสั่ง: คัดลายมือตามเส้นประให้สวยงามและถูกต้องตามสัดส่วน</p>
+          </div>
+          <div style="text-align: right; font-size: 11px; color: #831843; line-height: 1.6;">
+            <div>ชื่อ-นามสกุล: _____________________</div>
+            <div>ชั้น/ห้อง: ________ วันที่: __________</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tracing Rows -->
+      <div id="thai-rows" style="flex:1; display:flex; flex-direction:column; gap:8px;"></div>
+
+      <div style="margin-top: 14px; padding-top: 8px; border-top: 1px solid #fce7f3; display:flex; justify-content:space-between; font-size: 10px; color:#9d174d;">
+        <span>ผลการประเมิน: [ ดีมาก ⭐️⭐️⭐️ ] [ ดี ⭐️⭐️ ] [ พอใช้ ⭐️ ]</span>
+        <span>Hatafuku Studio 2.0 • Thai Handwriting Suite</span>
+        <span>หน้า 1 จาก 1</span>
+      </div>
+    </div>
+  `,run(){
+    (function () {
+      const GROUPS = {
+        g1: [
+          { ch: 'ก', word: 'ไก่', emoji: '🐔' },
+          { ch: 'ข', word: 'ไข่', emoji: '🥚' },
+          { ch: 'ฃ', word: 'ขวด', emoji: '🍾' },
+          { ch: 'ค', word: 'ควาย', emoji: '🐃' },
+          { ch: 'ฅ', word: 'คน', emoji: '👨' },
+          { ch: 'ฆ', word: 'ระฆัง', emoji: '🔔' },
+          { ch: 'ง', word: 'งู', emoji: '🐍' }
+        ],
+        g2: [
+          { ch: 'จ', word: 'จาน', emoji: '🍽️' },
+          { ch: 'ฉ', word: 'ฉิ่ง', emoji: '🎵' },
+          { ch: 'ช', word: 'ช้าง', emoji: '🐘' },
+          { ch: 'ซ', word: 'โซ่', emoji: '⛓️' },
+          { ch: 'ฌ', word: 'เฌอ', emoji: '🌳' },
+          { ch: 'ญ', word: 'หญิง', emoji: '👩' }
+        ],
+        g3: [
+          { ch: 'ด', word: 'เด็ก', emoji: '🧒' },
+          { ch: 'ต', word: 'เต่า', emoji: '🐢' },
+          { ch: 'ถ', word: 'ถุง', emoji: '🛍️' },
+          { ch: 'ท', word: 'ทหาร', emoji: '💂' },
+          { ch: 'ธ', word: 'ธง', emoji: '🚩' },
+          { ch: 'น', word: 'หนู', emoji: '🐭' }
+        ],
+        g4: [
+          { ch: 'บ', word: 'ใบไม้', emoji: '🍃' },
+          { ch: 'ป', word: 'ปลา', emoji: '🐟' },
+          { ch: 'ผ', word: 'ผึ้ง', emoji: '🐝' },
+          { ch: 'ฝ', word: 'ฝา', emoji: '🍲' },
+          { ch: 'พ', word: 'พาน', emoji: '🏆' },
+          { ch: 'ฟ', word: 'ฟัน', emoji: '🦷' },
+          { ch: 'ภ', word: 'สำเภา', emoji: '⛵' },
+          { ch: 'ม', word: 'ม้า', emoji: '🐴' }
+        ],
+        g5: [
+          { ch: 'ย', word: 'ยักษ์', emoji: '👹' },
+          { ch: 'ร', word: 'เรือ', emoji: '🚢' },
+          { ch: 'ล', word: 'ลิง', emoji: '🐵' },
+          { ch: 'ว', word: 'แหวน', emoji: '💍' },
+          { ch: 'ส', word: 'เสือ', emoji: '🐯' },
+          { ch: 'ห', word: 'หีบ', emoji: '📦' },
+          { ch: 'อ', word: 'อ่าง', emoji: '🛁' },
+          { ch: 'ฮ', word: 'นกฮูก', emoji: '🦉' }
+        ],
+        vowels: [
+          { ch: '-ะ', word: 'สระอะ', emoji: '✨' },
+          { ch: '-า', word: 'สระอา', emoji: '✨' },
+          { ch: '-ิ', word: 'สระอิ', emoji: '✨' },
+          { ch: '-ี', word: 'สระอี', emoji: '✨' },
+          { ch: '-ึ', word: 'สระอึ', emoji: '✨' },
+          { ch: '-ื', word: 'สระอือ', emoji: '✨' },
+          { ch: '-ุ', word: 'สระอุ', emoji: '✨' },
+          { ch: '-ู', word: 'สระอู', emoji: '✨' }
+        ]
+      };
+
+      const selGroup = document.getElementById('sel-group');
+      const iptTitle = document.getElementById('ipt-title');
+      const selOpacity = document.getElementById('sel-opacity');
+      const thaiRows = document.getElementById('thai-rows');
+      const viewTitle = document.getElementById('view-title');
+
+      function render() {
+        const group = GROUPS[selGroup.value] || GROUPS.g1;
+        viewTitle.textContent = iptTitle.value || 'แบบฝึกคัดลายมือภาษาไทย';
+        const op = selOpacity.value;
+
+        thaiRows.innerHTML = group.map(item => `
+          <div class="trace-row">
+            <div class="char-badge">
+              <span>${item.ch}</span>
+            </div>
+            <div style="min-width: 60px; font-size: 13px; font-weight: bold; color: #4a044e;">
+              ${item.emoji} ${item.word}
+            </div>
+            <div style="display:flex; gap:8px; flex:1;">
+              ${Array.from({ length: 7 }).map((_, i) => `
+                <div class="trace-cell" style="color: rgba(30, 41, 59, ${i < 5 ? op : '0'});">
+                  ${item.ch}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `).join('');
+      }
+
+      selGroup.onchange = render;
+      selOpacity.onchange = render;
+      iptTitle.oninput = () => viewTitle.textContent = iptTitle.value;
+      document.getElementById('btn-print').onclick = () => window.print();
+
+      if (window.HatafukuCore && window.HatafukuCore.setupModuleToolbar) {
+        window.HatafukuCore.setupModuleToolbar({
+          moduleKey: 'thai_practice',
+          pageSelector: '.a4-page',
+          getTitle: () => iptTitle.value,
+          onSave: () => ({ group: selGroup.value, opacity: selOpacity.value, title: iptTitle.value }),
+          onLoad: (data) => {
+            if (data.group) selGroup.value = data.group;
+            if (data.opacity) selOpacity.value = data.opacity;
+            if (data.title) iptTitle.value = data.title;
+            render();
+          }
+        });
+      }
+
+      render();
+    })();
+  }},
+math:{n:`🧮 โจทย์คณิตสุ่ม`,h:`<div class="clay-card p-5 space-y-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs font-bold text-pink-950">
+        <div>
+          <label class="block mb-1">การคำนวณ (Operation)</label>
+          <select id="sel-op" class="w-full p-2.5 rounded-xl border border-pink-300 bg-white font-semibold">
+            <option value="add" selected>➕ การบวก (Addition)</option>
+            <option value="sub">➖ การลบ (Subtraction)</option>
+            <option value="mul">✖️ การคูณ (Multiplication)</option>
+            <option value="div">➗ การหาร (Division)</option>
+            <option value="mixed">🔀 ผสม บวกลบคูณ (Mixed)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block mb-1">ระดับชั้น / จำนวนหลัก</label>
+          <select id="sel-digits" class="w-full p-2.5 rounded-xl border border-pink-300 bg-white font-semibold">
+            <option value="1">หลักหน่วย (1 - 9) • อนุบาล/ป.1</option>
+            <option value="2" selected>สองหลัก (10 - 99) • ป.2 - ป.3</option>
+            <option value="3">สามหลัก (100 - 999) • ป.4 - ป.6</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block mb-1">จำนวนข้อในหนึ่งหน้า</label>
+          <select id="sel-count" class="w-full p-2.5 rounded-xl border border-pink-300 bg-white font-semibold">
+            <option value="12">12 ข้อ (ช่องใหญ่ สบายตา)</option>
+            <option value="20" selected>20 ข้อ (ขนาดมาตรฐาน)</option>
+            <option value="30">30 ข้อ (คณิตคิดเร็ว ฝึกฝน)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block mb-1">หัวข้อใบงาน</label>
+          <input type="text" id="ipt-title" value="แบบฝึกคิดเลขเร็ว: การบวกเลขสองหลัก" class="w-full p-2.5 rounded-xl border border-pink-300 bg-white font-semibold" />
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-pink-200">
+        <label class="flex items-center gap-2 text-xs font-bold text-pink-900 cursor-pointer">
+          <input type="checkbox" id="chk-show-answers" class="w-4 h-4 accent-pink-600 rounded" />
+          <span>แสดงคำตอบเฉลย (Show Answers)</span>
+        </label>
+
+        <button id="btn-randomize" class="px-6 py-2 rounded-2xl bg-pink-600 hover:bg-pink-700 text-white font-black text-xs shadow-md transition flex items-center gap-1.5 cursor-pointer">
+          <span>🎲</span> <span>สุ่มชุดโจทย์ใหม่ (Generate New)</span>
+        </button>
+      </div>
+    </div><button class="b" id="btn-print">🖨️ พิมพ์ใบงาน A4</button>`,s:`
+    <div class="a4-page" id="sheet-math">
+      <div style="border-bottom: 2px dashed #f472b6; padding-bottom: 12px; margin-bottom: 16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h2 id="view-title" style="font-size: 22px; font-weight: 900; color: #831843; margin:0;">แบบฝึกคิดเลขเร็ว: การบวกเลขสองหลัก</h2>
+            <p style="font-size: 11px; color: #9d174d; margin: 4px 0 0 0;">คำสั่ง: จงหาผลลัพธ์ของโจทย์แต่ละข้อให้ถูกต้องและรวดเร็ว</p>
+          </div>
+          <div style="text-align: right; font-size: 11px; color: #831843; line-height: 1.6;">
+            <div>ชื่อ-นามสกุล: _____________________</div>
+            <div>ชั้น/ห้อง: ________ วันที่: __________</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Problem Grid -->
+      <div id="math-grid" style="flex:1; display:grid; gap: 14px; grid-template-columns: repeat(4, 1fr); align-content: start;"></div>
+
+      <!-- Footer -->
+      <div style="margin-top: 14px; padding-top: 8px; border-top: 1px solid #fce7f3; display:flex; justify-content:space-between; font-size: 10px; color:#9d174d;">
+        <span>คะแนนที่ได้: [ _____ / <span id="view-total-points">20</span> ]</span>
+        <span>Hatafuku Studio 2.0 • Math Worksheet Suite</span>
+        <span>หน้า 1 จาก 1</span>
+      </div>
+    </div>
+  `,run(){
+    (function () {
+      const selOp = document.getElementById('sel-op');
+      const selDigits = document.getElementById('sel-digits');
+      const selCount = document.getElementById('sel-count');
+      const iptTitle = document.getElementById('ipt-title');
+      const chkShow = document.getElementById('chk-show-answers');
+      const mathGrid = document.getElementById('math-grid');
+      const viewTitle = document.getElementById('view-title');
+      const viewTotalPoints = document.getElementById('view-total-points');
+
+      let problems = [];
+
+      function generateProblems() {
+        const count = parseInt(selCount.value);
+        const digits = parseInt(selDigits.value);
+        const opType = selOp.value;
+
+        const max = digits === 1 ? 9 : digits === 2 ? 99 : 999;
+        const min = digits === 1 ? 1 : digits === 2 ? 10 : 100;
+
+        problems = [];
+        for (let i = 0; i < count; i++) {
+          let op = opType;
+          if (op === 'mixed') {
+            const ops = ['add', 'sub', 'mul'];
+            op = ops[Math.floor(Math.random() * ops.length)];
+          }
+
+          let a = Math.floor(Math.random() * (max - min + 1)) + min;
+          let b = Math.floor(Math.random() * (max - min + 1)) + min;
+
+          if (op === 'sub' && b > a) {
+            const tmp = a; a = b; b = tmp;
+          }
+          if (op === 'div') {
+            b = Math.floor(Math.random() * 9) + 2;
+            a = b * (Math.floor(Math.random() * 12) + 1);
+          }
+
+          let ans = 0;
+          let sym = '+';
+          if (op === 'add') { ans = a + b; sym = '+'; }
+          else if (op === 'sub') { ans = a - b; sym = '-'; }
+          else if (op === 'mul') { ans = a * b; sym = '×'; }
+          else if (op === 'div') { ans = a / b; sym = '÷'; }
+
+          problems.push({ id: i + 1, a, b, sym, ans });
+        }
+
+        render();
+      }
+
+      function render() {
+        viewTitle.textContent = iptTitle.value || 'แบบฝึกคิดเลขเร็ว';
+        viewTotalPoints.textContent = problems.length;
+        const showAns = chkShow.checked;
+
+        const cols = problems.length === 12 ? 3 : problems.length === 20 ? 4 : 5;
+        mathGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+
+        mathGrid.innerHTML = problems.map(p => `
+          <div class="math-prob-box">
+            <div style="font-size: 11px; color:#64748b; align-self: flex-start; margin-bottom: 2px;">(${p.id})</div>
+            <div style="text-align: right; width: 100%;">
+              <div>${p.a}</div>
+              <div style="border-bottom: 1.5px solid #0f172a; padding-bottom: 2px;">${p.sym} ${p.b}</div>
+              <div style="min-height: 24px; padding-top: 4px; color: ${showAns ? '#e11d48' : 'transparent'}; font-weight: 900;">
+                ${showAns ? p.ans : '&nbsp;'}
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      document.getElementById('btn-randomize').onclick = generateProblems;
+      selOp.onchange = generateProblems;
+      selDigits.onchange = generateProblems;
+      selCount.onchange = generateProblems;
+      iptTitle.oninput = () => viewTitle.textContent = iptTitle.value;
+      chkShow.onchange = render;
+      document.getElementById('btn-print').onclick = () => window.print();
+
+      if (window.HatafukuCore && window.HatafukuCore.setupModuleToolbar) {
+        window.HatafukuCore.setupModuleToolbar({
+          moduleKey: 'math',
+          pageSelector: '.a4-page',
+          getTitle: () => iptTitle.value,
+          onSave: () => ({ op: selOp.value, digits: selDigits.value, count: selCount.value, title: iptTitle.value }),
+          onLoad: (data) => {
+            if (data.op) selOp.value = data.op;
+            if (data.digits) selDigits.value = data.digits;
+            if (data.count) selCount.value = data.count;
+            if (data.title) iptTitle.value = data.title;
+            generateProblems();
+          }
+        });
+      }
+
+      generateProblems();
+    })();
+  }},
+book:{n:`📖 สมุดพับ 8 หน้า`,h:`<div class="clay-card p-5 space-y-4">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs font-bold text-pink-950">
+        <div>
+          <label class="block mb-1">เลือกชุดนิทาน / คำศัพท์ตัวอย่าง</label>
+          <select id="sel-preset" class="w-full p-2.5 rounded-xl border border-pink-300 bg-white font-semibold">
+            <option value="story1" selected>🐰 นิทาน: กระต่ายกับเต่าเพื่อนรัก</option>
+            <option value="vocab1">🍎 คำศัพท์: ตลาดผลไม้ของหนู</option>
+            <option value="space1">🚀 ผจญภัย: เดินทางสู่ห้วงอวกาศ</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block mb-1">ชื่อเรื่องปก (Booklet Title)</label>
+          <input type="text" id="ipt-title" value="กระต่ายกับเต่าเพื่อนรัก" class="w-full p-2.5 rounded-xl border border-pink-300 bg-white font-semibold" />
+        </div>
+
+        <div>
+          <label class="block mb-1">ชื่อผู้แต่ง / ภาพประกอบ</label>
+          <input type="text" id="ipt-author" value="ครูฮาตาฟุกุ & เพื่อนตัวน้อย" class="w-full p-2.5 rounded-xl border border-pink-300 bg-white font-semibold" />
+        </div>
+      </div>
+    </div><button class="b" id="btn-print">🖨️ พิมพ์ใบงาน A4</button>`,s:`
+    <div class="a4-landscape" id="sheet-booklet">
+      <!-- Mini Booklet 8-page Grid -->
+      <div class="booklet-grid" id="booklet-pages">
+        <!-- Top row: Pages 5, 4, 3, 2 (Upside down for 8-page folding standard) -->
+        <div class="booklet-page upside-down" id="p-5"></div>
+        <div class="booklet-page upside-down" id="p-4"></div>
+        <div class="booklet-page upside-down" id="p-3"></div>
+        <div class="booklet-page upside-down" id="p-2"></div>
+
+        <!-- Bottom row: Pages 6, Back Cover, Front Cover, Page 1 -->
+        <div class="booklet-page" id="p-6"></div>
+        <div class="booklet-page" id="p-back"></div>
+        <div class="booklet-page" id="p-front"></div>
+        <div class="booklet-page" id="p-1"></div>
+      </div>
+
+      <!-- Cut and Fold Instructions -->
+      <div class="no-print" style="margin-top: 10px; font-size: 11px; color:#64748b; text-align: center;">
+        ✂️ วิธีพับ: พับครึ่งแนวยาว ➔ พับทบเป็น 8 ส่วน ➔ ตัดผ่าเส้นกลาง ➔ ดันกางออกแล้วพับเป็นเล่มสมุด 8 หน้า
+      </div>
+    </div>
+  `,run(){
+    (function () {
+      const PRESETS = {
+        story1: {
+          title: 'กระต่ายกับเต่าเพื่อนรัก',
+          author: 'ครูฮาตาฟุกุ',
+          pages: [
+            { text: 'ในป่าใหญ่แสนสดใส มีกระต่ายและเต่าเป็นเพื่อนซี้', emoji: '🌲 🐰 🐢' },
+            { text: 'กระต่ายชวนเต่าวิ่งแข่ง เพื่อความสนุกสนาน', emoji: '🏃 💨 🏁' },
+            { text: 'กระต่ายวิ่งนำไปไกล แล้วเผลอนอนหลับใต้ต้นไม้', emoji: '🌳 😴 💤' },
+            { text: 'เต่าเดินต้วมเตี้ยมไม่หยุด ด้วยความพยายามอย่างตั้งใจ', emoji: '🐢 🐾 👣' },
+            { text: 'เต่าเดินแซงกระต่ายที่กำลังหลับปุ๋ยไปอย่างช้าๆ', emoji: '🤫 🚶‍♂️ 🏆' },
+            { text: 'ทั้งสองกอดคอกันเข้าเส้นชัย ความพยายามคือสิ่งสวยงาม', emoji: '🤝 🌟 ❤️' }
+          ]
+        },
+        vocab1: {
+          title: 'ตลาดผลไม้แสนอร่อย',
+          author: 'Hatafuku Kids',
+          pages: [
+            { text: 'Apple = แอปเปิ้ลสีแดงสด หวานกรอบ', emoji: '🍎 😋' },
+            { text: 'Banana = กล้วยหอมสีเหลือง มีประโยชน์', emoji: '🍌 🐒' },
+            { text: 'Orange = ส้มรสเปรี้ยวอมหวาน วิตามินซีสูง', emoji: '🍊 🍹' },
+            { text: 'Grape = องุ่นลูกกลมพวงโต สีม่วงสวย', emoji: '🍇 🍇' },
+            { text: 'Watermelon = แตงโมแตงไทย เย็นชื่นใจ', emoji: '🍉 ☀️' },
+            { text: 'กินผลไม้ทุกวัน ร่างกายแข็งแรงสมบูรณ์', emoji: '💪 🍓 🍍' }
+          ]
+        },
+        space1: {
+          title: 'ท่องแดนอวกาศน่าพิศวง',
+          author: 'Junior Astronaut',
+          pages: [
+            { text: 'นับถอยหลัง 3.. 2.. 1.. จรวดพุ่งทะยานสู่ท้องฟ้า!', emoji: '🚀 🔥 ☁️' },
+            { text: 'มองเห็นดวงจันทร์สีเงินส่องสว่างเคียงข้างโลก', emoji: '🌕 🌍 ✨' },
+            { text: 'แวะทักทายดาวอังคารสีแดง มีฝุ่นและหินมากมาย', emoji: '🪐 🔴 🛸' },
+            { text: 'ดาวพฤหัสบดีลูกใหญ่ยักษ์ มีพายุหมุนลูกโต', emoji: '🌀 🪐 🔭' },
+            { text: 'ดาวเสาร์มีวงแหวนน้ำแข็งและฝุ่นประกายสวยงาม', emoji: '💫 🪐 👑' },
+            { text: 'เดินทางกลับสู่โลกสีคราม บ้านที่แสนอบอุ่นของเรา', emoji: '🌏 👨‍🚀 🏡' }
+          ]
+        }
+      };
+
+      const selPreset = document.getElementById('sel-preset');
+      const iptTitle = document.getElementById('ipt-title');
+      const iptAuthor = document.getElementById('ipt-author');
+
+      function renderBooklet() {
+        const data = PRESETS[selPreset.value] || PRESETS.story1;
+        const title = iptTitle.value || data.title;
+        const author = iptAuthor.value || data.author;
+
+        // Front Cover
+        document.getElementById('p-front').innerHTML = `
+          <div style="border: 2px solid #db2777; border-radius: 12px; padding: 12px; width: 90%; height: 86%; display: flex; flex-direction: column; align-items: center; justify-content: space-between; background: #fffdfa;">
+            <div style="font-size: 10px; font-weight: 800; color: #be185d; text-transform: uppercase;">Mini Picture Book</div>
+            <div>
+              <div style="font-size: 42px; margin-bottom: 6px;">${data.pages[0].emoji.split(' ')[0]}</div>
+              <h2 style="font-size: 14px; font-weight: 900; color: #831843; margin: 0; line-height: 1.2;">${title}</h2>
+            </div>
+            <div style="font-size: 9px; color: #9d174d;">ผู้แต่ง: ${author}</div>
+          </div>
+          <span class="page-num">หน้าปก (Cover)</span>
+        `;
+
+        // Back Cover
+        document.getElementById('p-back').innerHTML = `
+          <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; width: 90%; height: 86%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fdf2f8;">
+            <div style="font-size: 28px; margin-bottom: 8px;">🌈 ⭐ 📚</div>
+            <div style="font-size: 10px; font-weight: bold; color: #831843;">สร้างด้วย Hatafuku Studio 2.0</div>
+            <div style="font-size: 8px; color: #9d174d; margin-top: 4px;">สื่อการเรียนรู้เชิงสร้างสรรค์ ออฟไลน์ 100%</div>
+          </div>
+          <span class="page-num">ปกหลัง (Back)</span>
+        `;
+
+        // Inner Pages 1 to 6
+        const pageIds = ['p-1', 'p-2', 'p-3', 'p-4', 'p-5', 'p-6'];
+        data.pages.forEach((p, idx) => {
+          const el = document.getElementById(pageIds[idx]);
+          if (el) {
+            el.innerHTML = `
+              <div style="font-size: 34px; margin-bottom: 8px;">${p.emoji}</div>
+              <p style="font-size: 11px; font-weight: 700; color: #1e293b; line-height: 1.4; padding: 0 8px; margin: 0;">${p.text}</p>
+              <span class="page-num">หน้า ${idx + 1}</span>
+            `;
+          }
+        });
+      }
+
+      selPreset.onchange = () => {
+        const data = PRESETS[selPreset.value];
+        iptTitle.value = data.title;
+        iptAuthor.value = data.author;
+        renderBooklet();
+      };
+      iptTitle.oninput = renderBooklet;
+      iptAuthor.oninput = renderBooklet;
+      document.getElementById('btn-print').onclick = () => window.print();
+
+      if (window.HatafukuCore && window.HatafukuCore.setupModuleToolbar) {
+        window.HatafukuCore.setupModuleToolbar({
+          moduleKey: 'mini_booklet',
+          pageSelector: '.a4-page',
+          getTitle: () => iptTitle.value,
+          onSave: () => ({ preset: selPreset.value, title: iptTitle.value, author: iptAuthor.value }),
+          onLoad: (data) => {
+            if (data.preset) selPreset.value = data.preset;
+            if (data.title) iptTitle.value = data.title;
+            if (data.author) iptAuthor.value = data.author;
+            renderBooklet();
+          }
+        });
+      }
+
+      renderBooklet();
+    })();
+  }},
+};
+
+const XWCSS=`@page{size:A4}#xwbox label{display:block;font-weight:600;font-size:13px;margin-top:8px}#xwbox .grid{display:grid;grid-template-columns:1fr;gap:6px}#xwbox .sw{overflow-x:auto;background:#eee;border-radius:10px;padding:6px;margin-top:10px}#xwbox .sw>*{zoom:.5}
+@media print{body>header,#nav,#m>*:not(#xwbox),#xwbox .no-print,#xwbox .xwhead{display:none!important}#xwbox{padding:0}#xwbox .sw{padding:0;background:none;overflow:visible}#xwbox .sw>*{zoom:1;margin:0!important;box-shadow:none!important}body{background:#fff!important}}`;
+let xwk='thai';
+function xwShow(k){xwk=k;const x=XW[k];$('#xwtool').innerHTML=x.h+'<div class="sw">'+x.s+'</div>';
+ let ps=document.getElementById('xwps');if(!ps){ps=document.createElement('style');ps.id='xwps';document.head.appendChild(ps)}
+ ps.textContent=k=='book'?'@media print{@page{size:A4 landscape;margin:0}}':'@media print{@page{size:A4;margin:0}}';x.run()}
+const _rws=R.ws,_iws=I.ws;
+R.ws=()=>_rws()+`<div id="xwbox"><div class="card xwhead"><b>🧰 ใบงานเพิ่มเติม (ย้ายมาจาก Hatafuku Studio)</b><select id="xwsel" onchange="xwShow(this.value)">${Object.keys(XW).map(k=>`<option value="${k}">${XW[k].n}</option>`).join('')}</select></div><div class="card" id="xwtool"></div></div>`;
+I.ws=()=>{_iws&&_iws();xwShow(xwk);$('#xwsel').value=xwk};
+if(!document.getElementById('xwcss')){const s=document.createElement('style');s.id='xwcss';s.textContent=XWCSS+`
+    .a4-page {
+      width: 210mm;
+      min-height: 297mm;
+      padding: 16mm 18mm;
+      margin: 20px auto;
+      background: #ffffff;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+      box-sizing: border-box;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+    }
+    .trace-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 12px;
+      border-bottom: 1.5px dashed #fbcfe8;
+    }
+    .char-badge {
+      width: 54px;
+      height: 54px;
+      background: #fdf2f8;
+      border: 2px solid #f472b6;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      font-weight: 900;
+      color: #be185d;
+      flex-shrink: 0;
+    }
+    .trace-cell {
+      width: 48px;
+      height: 48px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: rgba(30, 41, 59, 0.28);
+      font-family: 'Sarabun', sans-serif;
+      background: repeating-linear-gradient(to bottom, #fff 0px, #fff 11px, #f1f5f9 12px);
+    }
+    .a4-page {
+      width: 210mm;
+      min-height: 297mm;
+      padding: 16mm 18mm;
+      margin: 20px auto;
+      background: #ffffff;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+      box-sizing: border-box;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+    }
+    .math-prob-box {
+      border: 1.5px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #f8fafc;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: 18px;
+      font-weight: 900;
+      color: #0f172a;
+    }
+    /* A4 Landscape Sheet for Foldable 8-Page Booklet */
+    .a4-landscape {
+      width: 297mm;
+      min-height: 210mm;
+      padding: 10mm;
+      margin: 20px auto;
+      background: #ffffff;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+      box-sizing: border-box;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+    }
+    .booklet-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: 1fr 1fr;
+      flex: 1;
+      border: 2px solid #334155;
+      background: #334155;
+      gap: 1.5px;
+    }
+    .booklet-page {
+      background: #ffffff;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      box-sizing: border-box;
+      position: relative;
+    }
+    /* Top row pages are rotated 180 degrees so they fold correctly! */
+    .booklet-page.upside-down {
+      transform: rotate(180deg);
+    }
+    .page-num {
+      position: absolute;
+      bottom: 4px;
+      font-size: 9px;
+      font-weight: bold;
+      color: #94a3b8;
+    }
+  `;document.head.appendChild(s)}
+
+</script>
+<button id="kw-install" type="button">📲 ติดตั้งลงมือถือ</button>
+<div id="kw-hint">📲 ติดตั้งบน iPhone: กดปุ่ม <b>แชร์</b> แล้วเลือก <b>เพิ่มลงในหน้าจอโฮม</b> <span id="kw-x" style="float:right;cursor:pointer">✕</span></div>
+<script>
+(function(){
+  var isHttp=/^https?:$/.test(location.protocol);
+  if('serviceWorker' in navigator&&isHttp){
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
+  }
+  var standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+  var btn=document.getElementById('kw-install'),hint=document.getElementById('kw-hint'),dp=null;
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(!standalone)btn.style.display='block'});
+  btn.addEventListener('click',function(){if(!dp)return;dp.prompt();dp.userChoice.finally(function(){dp=null;btn.style.display='none'})});
+  window.addEventListener('appinstalled',function(){btn.style.display='none'});
+  var ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  if(ios&&!standalone&&isHttp&&!sessionStorage.getItem('kw-hint')){hint.style.display='block'}
+  document.getElementById('kw-x').addEventListener('click',function(){hint.style.display='none';try{sessionStorage.setItem('kw-hint','1')}catch(e){}});
+})();
+</script>
+</body></html>

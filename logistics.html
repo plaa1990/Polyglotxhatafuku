@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="th" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hatafuku — เรียนโลจิสติกส์สไตล์ดูโอลิงโกะ</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Prompt & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Prompt', 'Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Prompt', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        @keyframes pulse-soft {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .pulse-btn { animation: pulse-soft 2s infinite; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 h-full flex flex-col overflow-hidden">
+
+    <!-- Top Duo-style Navbar -->
+    <header class="bg-white border-b border-slate-200 shadow-sm z-20 flex-shrink-0">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('dashboard')">
+                <div class="bg-emerald-500 p-2.5 rounded-2xl shadow-md flex items-center justify-center text-xl font-bold text-white">
+                    <i class="fa-solid fa-truck-fast"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg leading-tight text-slate-800 tracking-wide">Hatafuku</h1>
+                    <p class="text-xs text-emerald-600 font-semibold">Logistics Duolingo Edition</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4 text-sm font-bold">
+                <!-- Streak -->
+                <div class="flex items-center space-x-1.5 text-amber-500 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200">
+                    <i class="fa-solid fa-fire text-base"></i>
+                    <span id="stat-streak">3</span>
+                </div>
+                <!-- Gems / XP -->
+                <div class="flex items-center space-x-1.5 text-sky-500 bg-sky-50 px-3 py-1.5 rounded-full border border-sky-200">
+                    <i class="fa-solid fa-bolt text-base"></i>
+                    <span id="stat-xp">120</span>
+                </div>
+                <!-- Hearts -->
+                <div class="flex items-center space-x-1.5 text-rose-500 bg-rose-50 px-3 py-1.5 rounded-full border border-rose-200">
+                    <i class="fa-solid fa-heart text-base"></i>
+                    <span id="stat-hearts">5</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="flex-1 flex overflow-hidden justify-center">
+        
+        <!-- Main Content Viewport -->
+        <main class="w-full max-w-2xl bg-white flex flex-col overflow-hidden relative shadow-lg">
+            
+            <!-- Dynamic Content Container -->
+            <div id="app-content" class="flex-1 overflow-y-auto p-4 sm:p-6 custom-scrollbar">
+                <!-- Content will be injected here via JavaScript -->
+            </div>
+
+            <!-- Bottom Navigation Bar (Duo Style) -->
+            <nav class="bg-white border-t border-slate-200 p-3 flex justify-around items-center flex-shrink-0 z-10">
+                <button onclick="switchTab('dashboard')" id="nav-btn-path" class="flex flex-col items-center text-emerald-600 space-y-0.5 transition">
+                    <i class="fa-solid fa-map text-xl"></i>
+                    <span class="text-[10px] font-bold">เส้นทาง</span>
+                </button>
+                <button onclick="switchTab('tools')" id="nav-btn-tools" class="flex flex-col items-center text-slate-400 hover:text-slate-600 space-y-0.5 transition">
+                    <i class="fa-solid fa-calculator text-xl"></i>
+                    <span class="text-[10px] font-bold">เครื่องมือ</span>
+                </button>
+                <button onclick="switchTab('glossary')" id="nav-btn-glossary" class="flex flex-col items-center text-slate-400 hover:text-slate-600 space-y-0.5 transition">
+                    <i class="fa-solid fa-book-bookmark text-xl"></i>
+                    <span class="text-[10px] font-bold">คำศัพท์</span>
+                </button>
+                <button onclick="switchTab('quiz')" id="nav-btn-quiz" class="flex flex-col items-center text-slate-400 hover:text-slate-600 space-y-0.5 transition">
+                    <i class="fa-solid fa-graduation-cap text-xl"></i>
+                    <span class="text-[10px] font-bold">ทดสอบรวม</span>
+                </button>
+            </nav>
+
+        </main>
+    </div>
+
+    <!-- Custom Modal -->
+    <div id="custom-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full mx-4 shadow-2xl border border-slate-100 text-center animate-bounce-in">
+            <div id="modal-icon" class="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 id="modal-title" class="font-bold text-xl text-slate-800 mb-2">ยอดเยี่ยม!</h3>
+            <p id="modal-message" class="text-sm text-slate-600 mb-6">คุณทำภารกิจบทเรียนสำเร็จแล้ว</p>
+            <button onclick="closeModal()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-2xl transition text-sm shadow-md">ดำเนินการต่อ</button>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Curriculum & Duo Path Units
+        const units = [
+            {
+                level: 0,
+                title: "ระดับ 0 — รู้จักโลจิสติกส์ก่อนเริ่ม",
+                color: "bg-emerald-500",
+                borderColor: "border-emerald-600",
+                textColor: "text-emerald-600",
+                lightBg: "bg-emerald-50",
+                modules: [
+                    { name: "ความหมายโลจิสติกส์ & ซัพพลายเชน", desc: "แยกแยะความต่างระหว่าง Logistics และ Supply Chain พร้อมตัวอย่างจริง" },
+                    { name: "กิจกรรมหลัก 7 ประการ (7 Rs)", desc: "หัวใจสำคัญของงานโลจิสติกส์ที่ต้องส่งมอบถูกต้องทุกมิติ" },
+                    { name: "พื้นฐานตัวเลขและภาษาอังกฤษ", desc: "คณิตศาสตร์และคำศัพท์สากลจำเป็นก่อนเรียนเจาะลึก" }
+                ]
+            },
+            {
+                level: 1,
+                title: "ระดับ 1 — กิจกรรมหลักโลจิสติกส์",
+                color: "bg-amber-500",
+                borderColor: "border-amber-600",
+                textColor: "text-amber-600",
+                lightBg: "bg-amber-50",
+                modules: [
+                    { name: "การจัดซื้อ & จัดหา (Procurement)", desc: "กระบวนการจัดซื้อและการคัดเลือกผู้จัดจำหน่าย (Vendor Evaluation)" },
+                    { name: "การจัดการคลังสินค้า (Warehouse)", desc: "กระบวนการรับเข้า จัดเก็บ หยิบแพ็ค และวางผังคลัง" },
+                    { name: "สินค้าคงคลัง & ABC Analysis", desc: "บริหารสต็อกปลอดภัย จุดสั่งซื้อ และการวิเคราะห์สินค้ามูลค่าสูง" },
+                    { name: "การขนส่ง & Last Mile Delivery", desc: "เลือกรูปแบบขนส่งทางเรือ ราง รถ และอากาศ พร้อมกระจายสินค้าปลายทาง" }
+                ]
+            },
+            {
+                level: 2,
+                title: "ระดับ 2 — บูรณาการและเครื่องมือ",
+                color: "bg-orange-500",
+                borderColor: "border-orange-600",
+                textColor: "text-orange-600",
+                lightBg: "bg-orange-50",
+                modules: [
+                    { name: "หลักการซัพพลายเชน & Bullwhip Effect", desc: "ปรากฏการณ์แส้สะบัดและความเชื่อมโยงทั้งเครือข่าย" },
+                    { name: "การพยากรณ์ความต้องการ (Forecasting)", desc: "คาดการณ์อนาคตด้วยสถิติและค่าเฉลี่ยเคลื่อนที่" },
+                    { name: "เทคโนโลยี WMS / TMS / RFID", desc: "ระบบสารสนเทศ บาร์โค้ด และ IoT ในงานโลจิสติกส์สมัยใหม่" }
+                ]
+            },
+            {
+                level: 3,
+                title: "ระดับ 3 — กลยุทธ์และระหว่างประเทศ",
+                color: "bg-rose-500",
+                borderColor: "border-rose-600",
+                textColor: "text-rose-600",
+                lightBg: "bg-rose-50",
+                modules: [
+                    { name: "Incoterms 2020 & พิธีการศุลกากร", desc: "เงื่อนไขการค้าระหว่างประเทศ FOB, CIF, DDP และเอกสารส่งออก" },
+                    { name: "การวางแผนการผลิต (MRP & JIT)", desc: "เชื่อมโยงแผนผลิต วัตถุดิบ และการจัดส่งแบบทันเวลาพอดี" }
+                ]
+            },
+            {
+                level: 4,
+                title: "ระดับ 4 — วิเคราะห์และออกแบบระบบ",
+                color: "bg-sky-500",
+                borderColor: "border-sky-600",
+                textColor: "text-sky-600",
+                lightBg: "bg-sky-50",
+                modules: [
+                    { name: "การวิจัยดำเนินงาน (Operations Research)", desc: "แก้ปัญหาเส้นทางสั้นที่สุด และการจัดสรรทรัพยากรด้วยคณิตศาสตร์" },
+                    { name: "การออกแบบโครงข่าย & ทำเลที่ตั้งคลัง", desc: "เลือกจุดตั้งคลังสินค้าลดต้นทุนรวมสูงสุด" }
+                ]
+            },
+            {
+                level: 5,
+                title: "ระดับ 5 — เชี่ยวชาญและกรณีศึกษา",
+                color: "bg-purple-500",
+                borderColor: "border-purple-600",
+                textColor: "text-purple-600",
+                lightBg: "bg-purple-50",
+                modules: [
+                    { name: "กลยุทธ์โลจิสติกส์ & อนาคต", desc: "สร้างความได้เปรียบในการแข่งขันด้วยซัพพลายเชนระดับองค์กร" },
+                    { name: "กรณีศึกษา E-commerce & Cold Chain", desc: "วิเคราะห์โจทย์ธุรกิจจริงและแนวทางแก้ไขแบบมืออาชีพ" }
+                ]
+            }
+        ];
+
+        // Bite-sized Lesson Questions Bank per module
+        const lessonQuestions = {
+            "0-0": [
+                { q: "ข้อใดคือความหมายที่ถูกต้องของ 'Logistics'?", options: ["การผลิตสินค้าจำนวนมาก", "กระบวนการเคลื่อนย้ายและจัดเก็บสินค้าจากต้นทางถึงผู้บริโภค", "การตั้งราคาสินค้าในตลาดหลักทรัพย์", "การทำบัญชีรายรับรายจ่ายบริษัท"], answer: 1 },
+                { q: "Supply Chain และ Logistics แตกต่างกันอย่างไร?", options: ["ไม่มีความต่างกันเลย", "Logistics ใหญ่กว่า Supply Chain", "Supply Chain คือเครือข่ายภาพรวมทั้งหมด ส่วน Logistics เป็นกระบวนการย่อยภายใน", "Logistics ใช้กับบริการ ส่วน Supply Chain ใช้กับเกษตรกรรม"], answer: 2 }
+            ],
+            "0-1": [
+                { q: "กิจกรรมหลัก 7 ประการของโลจิสติกส์ (7 Rs) ข้อใดถูกต้อง?", options: ["Right Product, Right Quantity, Right Condition, Right Place, Right Time, Right Customer, Right Cost", "Right Price, Right Factory, Right Manager, Right truck...", "Right Sale, Right Profit, Right Tax...", "Right Design, Right Brand, Right CEO..."], answer: 0 }
+            ],
+            "0-2": [
+                { q: "ทักษะคำนวณใดที่สำคัญที่สุดในงานคลังสินค้าและสต็อก?", options: ["แคลคูลัสขั้นสูง", "ร้อยละ สัดส่วน และการคำนวณปริมาณการสั่งซื้อ (EOQ)", "ตรีโกณมิติ", "ฟิสิกส์นิวเคลียร์"], answer: 1 }
+            ],
+            "1-0": [
+                { q: "ขั้นตอนแรกสุดในวงจรการจัดซื้อ (Procurement Cycle) คืออะไร?", options: ["จ่ายเงินให้ซัพพลายเออร์", "ออกใบสั่งซื้อ (PO)", "การขอซื้อสินค้า/วัตถุดิบ (PR)", "ตรวจรับสินค้าที่หน้าคลัง"], answer: 2 }
+            ],
+            "1-1": [
+                { q: "กระบวนการใดในคลังสินค้าที่ทำหน้าที่นำสินค้าไปจัดเก็บตามตำแหน่งที่กำหนด?", options: ["Receiving", "Put-away", "Picking", "Shipping"], answer: 1 }
+            ],
+            "1-2": [
+                { q: "การวิเคราะห์ ABC Analysis จัดกลุ่มสินค้า A คือกลุ่มใด?", options: ["สินค้ามูลค่าต่ำ จำนวนมาก", "สินค้ามูลค่าสูง จำนวนน้อย ควบคุมเข้มงวด", "สินค้าหมดอายุไว", "สินค้าที่เลิกผลิตแล้ว"], answer: 1 }
+            ],
+            "1-3": [
+                { q: "การขนส่งรูปแบบใดมีต้นทุนถูกที่สุด และเหมาะกับสินค้าน้ำหนักมากระหว่างทวีป?", options: ["ทางอากาศ", "ทางรถบรรทุก", "ทางเรือ (Maritime)", "ทางท่อส่ง"], answer: 2 }
+            ],
+            "2-0": [
+                { q: "ปรากฏการณ์ 'Bullwhip Effect' เกิดจากสาเหตุใด?", options: ["พนักงานขนส่งขับรถเร็วเกินไป", "ความต้องการของผู้บริโภคแกว่งตัวเล็กน้อย แต่ส่งผลให้คำสั่งซื้อต้นน้ำผันผวนรุนแรงจากข้อมูลที่ไม่ตรงกัน", "การกำหนดราคาน้ำมันแพง", "สินค้าหมดอายุในคลัง"], answer: 1 }
+            ],
+            "2-1": [
+                { q: "เทคนิคการพยากรณ์ความต้องการแบบใดใช้คำนวณจากค่าเฉลี่ยข้อมูลย้อนหลังหลายๆ งวด?", options: ["Moving Average", "Random Guess", "Fixed Cost", "Linear Regression"], answer: 0 }
+            ],
+            "2-2": [
+                { q: "WMS ย่อมาจากระบบอะไรในโลจิสติกส์?", options: ["Warehouse Management System", "World Map Service", "Wide Money Solution", "Worker Movement Standard"], answer: 0 }
+            ],
+            "3-0": [
+                { q: "Incoterms 2020 ข้อใดที่ผู้ขายรับผิดชอบความเสี่ยงและภาษีนำเข้าส่งถึงหน้าบ้านผู้ซื้อ?", options: ["EXW", "FOB", "CIF", "DDP"], answer: 3 }
+            ],
+            "3-1": [
+                { q: "MRP ย่อมาจากอะไรในระบบวางแผนการผลิต?", options: ["Material Requirements Planning", "Maximum Retail Price", "Money Return Policy", "Machine Repair Program"], answer: 0 }
+            ],
+            "4-0": [
+                { q: "ปัญหาการขนส่งสินค้าจากหลายคลังไปยังหลายสาขาโดยให้ต้นทุนต่ำสุด จัดอยู่ในหมวดวิชาใด?", options: ["Operations Research ( OR )", "Psychology", "Fine Arts", "Music Theory"], answer: 0 }
+            ],
+            "4-1": [
+                { q: "การตัดสินใจเลือกทำเลที่ตั้งคลังสินค้า (Facility Location) คำนึงถึงสิ่งใดมากที่สุด?", options: ["สีของอาคารคลัง", "ต้นทุนการขนส่งรวมและรัศมีครอบคลุมลูกค้า", "จำนวนพนักงานหญิง", "ใกล้ร้านกาแฟ"], answer: 1 }
+            ],
+            "5-0": [
+                { q: "เป้าหมายสูงสุดของกลยุทธ์โลจิสติกส์ระดับองค์กรคืออะไร?", options: ["ลดพนักงานให้เหลือน้อยที่สุด", "สร้างความได้เปรียบในการแข่งขัน (Competitive Advantage)", "ยกเลิกการใช้รถบรรทุก", "ซื้อหุ้นคู่แข่ง"], answer: 1 }
+            ],
+            "5-1": [
+                { q: "Cold Chain Logistics สำคัญที่สุดกับสินค้ากลุ่มใด?", options: ["เสื้อผ้าแฟชั่น", "อาหารสดและเวชภัณฑ์ยาที่ต้องควบคุมอุณหภูมิ", "วัสดุก่อสร้าง", "เครื่องจักรกลหนัก"], answer: 1 }
+            ]
+        };
+
+        // App State
+        let gameState = {
+            streak: 3,
+            xp: 120,
+            hearts: 5,
+            completedModules: JSON.parse(localStorage.getItem('duo_hatafuku_completed') || '[]'),
+            currentLesson: null,
+            currentQuestionIdx: 0,
+            lessonCorrectCount: 0
+        };
+
+        function saveGameState() {
+            localStorage.setItem('duo_hatafuku_completed', JSON.stringify(gameState.completedModules));
+            document.getElementById('stat-streak').innerText = gameState.streak;
+            document.getElementById('stat-xp').innerText = gameState.xp;
+            document.getElementById('stat-hearts').innerText = gameState.hearts;
+        }
+
+        // Navigation Switcher
+        function switchTab(tabId) {
+            // Reset nav styles
+            ['path', 'tools', 'glossary', 'quiz'].forEach(t => {
+                let btn = document.getElementById(`nav-btn-${t}`);
+                if(btn) btn.className = "flex flex-col items-center text-slate-400 hover:text-slate-600 space-y-0.5 transition";
+            });
+
+            if(tabId === 'dashboard') {
+                document.getElementById('nav-btn-path').className = "flex flex-col items-center text-emerald-600 space-y-0.5 transition";
+                renderPath();
+            } else if(tabId === 'tools') {
+                document.getElementById('nav-btn-tools').className = "flex flex-col items-center text-emerald-600 space-y-0.5 transition";
+                renderTools();
+            } else if(tabId === 'glossary') {
+                document.getElementById('nav-btn-glossary').className = "flex flex-col items-center text-emerald-600 space-y-0.5 transition";
+                renderGlossary();
+            } else if(tabId === 'quiz') {
+                document.getElementById('nav-btn-quiz').className = "flex flex-col items-center text-emerald-600 space-y-0.5 transition";
+                renderQuiz();
+            }
+        }
+
+        // Render Duolingo-style Winding Path
+        function renderPath() {
+            const container = document.getElementById('app-content');
+            let html = `
+                <div class="space-y-8 pb-16">
+                    <div class="text-center py-4 bg-emerald-50 rounded-3xl border border-emerald-100 shadow-sm">
+                        <span class="bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">เส้นทางเรียนรู้</span>
+                        <h2 class="text-2xl font-extrabold text-slate-900 mt-2">พิชิตโลจิสติกส์ ทีละสเต็ป</h2>
+                        <p class="text-xs text-slate-600 mt-1">คลิกที่ปุ่มบทเรียนเพื่อเริ่มทำภารกิจตอบคำถามสะสม XP!</p>
+                    </div>
+            `;
+
+            units.forEach((unit, uIdx) => {
+                html += `
+                    <div class="space-y-6">
+                        <div class="${unit.color} text-white p-4 rounded-2xl shadow-md flex items-center justify-between">
+                            <div>
+                                <span class="bg-white/20 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase">Unit ${uIdx + 1}</span>
+                                <h3 class="font-extrabold text-base mt-1">${unit.title}</h3>
+                            </div>
+                            <i class="fa-solid fa-flag text-2xl opacity-80"></i>
+                        </div>
+                        <div class="flex flex-col items-center space-y-4 py-2">
+                `;
+
+                unit.modules.forEach((mod, mIdx) => {
+                    let key = `${uIdx}-${mIdx}`;
+                    let isCompleted = gameState.completedModules.includes(key);
+                    // Determine offset for zigzag path look
+                    let translateClass = mIdx % 2 === 0 ? "translate-x-0" : (mIdx % 4 === 1 ? "translate-x-8 sm:translate-x-12" : "-translate-x-8 sm:-translate-x-12");
+                    
+                    let btnColor = isCompleted ? "bg-emerald-500 text-white shadow-emerald-200 border-emerald-600" : `${unit.color} text-white shadow-lg pulse-btn border-b-4 border-slate-700/20`;
+
+                    html += `
+                        <div class="transform ${translateClass} transition">
+                            <button onclick="startLesson(${uIdx}, ${mIdx})" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full ${btnColor} flex flex-col items-center justify-center shadow-xl font-bold transition hover:scale-110 relative group">
+                                <i class="fa-solid ${isCompleted ? 'fa-check text-2xl' : 'fa-star text-xl'}"></i>
+                                <span class="absolute -bottom-7 bg-slate-800 text-white text-[10px] px-2 py-0.5 rounded-md opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-10 shadow-md">${mod.name}</span>
+                            </button>
+                        </div>
+                    `;
+                });
+
+                html += `</div></div>`;
+            });
+
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        // Start Duo-style Interactive Lesson
+        function startLesson(uIdx, mIdx) {
+            if(gameState.hearts <= 0) {
+                showModal("หัวใจของคุณหมดแล้ว! รอเวลาฟื้นฟูหรือทำแบบทดสอบทบทวน", "หัวใจหมด 💔");
+                return;
+            }
+
+            let key = `${uIdx}-${mIdx}`;
+            let questions = lessonQuestions[key] || [
+                { q: `คำถามทดสอบความเข้าใจในเรื่อง ${units[uIdx].modules[mIdx].name}?`, options: ["ถูกต้อง", "ผิดพลาด", "ยังไม่แน่ใจ", "ถูกทุกข้อ"], answer: 0 }
+            ];
+
+            gameState.currentLesson = { uIdx, mIdx, questions };
+            gameState.currentQuestionIdx = 0;
+            gameState.lessonCorrectCount = 0;
+
+            renderLessonQuestion();
+        }
+
+        function renderLessonQuestion() {
+            let lesson = gameState.currentLesson;
+            let qObj = lesson.questions[gameState.currentQuestionIdx];
+            let progressPercent = ((gameState.currentQuestionIdx) / lesson.questions.length) * 100;
+
+            const container = document.getElementById('app-content');
+            container.innerHTML = `
+                <div class="space-y-6 pb-12">
+                    <!-- Top Bar in Lesson -->
+                    <div class="flex items-center justify-between">
+                        <button onclick="renderPath()" class="text-slate-400 hover:text-slate-600 text-lg">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                        <div class="flex-1 mx-4 bg-slate-100 h-3 rounded-full overflow-hidden">
+                            <div class="bg-emerald-500 h-full rounded-full transition-all duration-300" style="width: ${progressPercent}%"></div>
+                        </div>
+                        <div class="flex items-center space-x-1 text-rose-500 font-bold text-sm">
+                            <i class="fa-solid fa-heart"></i>
+                            <span>${gameState.hearts}</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+                        <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">คำถามที่ ${gameState.currentQuestionIdx + 1} จาก ${lesson.questions.length}</span>
+                        <h3 class="text-xl font-bold text-slate-900 leading-snug">${qObj.q}</h3>
+
+                        <div class="space-y-3" id="options-container">
+                            ${qObj.options.map((opt, oIdx) => `
+                                <button onclick="selectOption(${oIdx})" id="opt-${oIdx}" class="w-full text-left p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 font-medium text-sm text-slate-700 transition flex items-center justify-between">
+                                    <span>${opt}</span>
+                                    <span class="w-6 h-6 rounded-full border border-slate-300 flex items-center justify-center text-xs text-slate-400">${oIdx + 1}</span>
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <button id="check-btn" onclick="checkAnswer()" class="w-full bg-slate-200 text-slate-400 font-bold py-3.5 rounded-2xl text-sm transition shadow-sm cursor-not-allowed" disabled>ตรวจสอบคำตอบ</button>
+                </div>
+            `;
+        }
+
+        let selectedOptionIdx = null;
+        function selectOption(oIdx) {
+            selectedOptionIdx = oIdx;
+            let lesson = gameState.currentLesson;
+            let qObj = lesson.questions[gameState.currentQuestionIdx];
+
+            qObj.options.forEach((_, idx) => {
+                let btn = document.getElementById(`opt-${idx}`);
+                if(idx === oIdx) {
+                    btn.className = "w-full text-left p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50 font-medium text-sm text-emerald-900 transition flex items-center justify-between shadow-sm";
+                } else {
+                    btn.className = "w-full text-left p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50 font-medium text-sm text-slate-700 transition flex items-center justify-between";
+                }
+            });
+
+            let checkBtn = document.getElementById('check-btn');
+            checkBtn.className = "w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 rounded-2xl text-sm transition shadow-md cursor-pointer";
+            checkBtn.removeAttribute('disabled');
+        }
+
+        function checkAnswer() {
+            let lesson = gameState.currentLesson;
+            let qObj = lesson.questions[gameState.currentQuestionIdx];
+            let isCorrect = selectedOptionIdx === qObj.answer;
+
+            let checkBtn = document.getElementById('check-btn');
+            checkBtn.setAttribute('disabled', 'true');
+
+            if(isCorrect) {
+                gameState.lessonCorrectCount++;
+                showLessonFeedback(true, "ถูกต้องเยี่ยมมาก! 🎉");
+            } else {
+                gameState.hearts = Math.max(0, gameState.hearts - 1);
+                saveGameState();
+                showLessonFeedback(false, `ยังไม่ถูกต้อง เฉลยคือ: ${qObj.options[qObj.answer]}`);
+            }
+        }
+
+        function showLessonFeedback(isCorrect, message) {
+            const container = document.getElementById('app-content');
+            let feedbackDiv = document.createElement('div');
+            feedbackDiv.className = `fixed bottom-0 left-0 right-0 p-6 ${isCorrect ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'} shadow-2xl rounded-t-3xl transition animate-slide-up z-50`;
+            feedbackDiv.innerHTML = `
+                <div class="max-w-2xl mx-auto flex items-center justify-between">
+                    <div>
+                        <h4 class="font-bold text-lg">${isCorrect ? 'ยอดเยี่ยม!' : 'เกือบถูกแล้ว!'}</h4>
+                        <p class="text-sm opacity-90">${message}</p>
+                    </div>
+                    <button onclick="nextLessonStep()" class="bg-white ${isCorrect ? 'text-emerald-600' : 'text-rose-600'} font-bold px-6 py-2.5 rounded-xl text-sm shadow-md transition hover:bg-slate-100">ดำเนินการต่อ</button>
+                </div>
+            `;
+            container.appendChild(feedbackDiv);
+        }
+
+        function nextLessonStep() {
+            let lesson = gameState.currentLesson;
+            gameState.currentQuestionIdx++;
+            selectedOptionIdx = null;
+
+            if(gameState.currentQuestionIdx < lesson.questions.length) {
+                renderLessonQuestion();
+            } else {
+                // Lesson completed!
+                let key = `${lesson.uIdx}-${lesson.mIdx}`;
+                if(!gameState.completedModules.includes(key)) {
+                    gameState.completedModules.push(key);
+                    gameState.xp += 15;
+                }
+                saveGameState();
+                renderLessonComplete();
+            }
+        }
+
+        function renderLessonComplete() {
+            const container = document.getElementById('app-content');
+            container.innerHTML = `
+                <div class="max-w-md mx-auto text-center space-y-6 py-12">
+                    <div class="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-4xl shadow-inner animate-bounce">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <h2 class="text-2xl font-extrabold text-slate-900">จบบทเรียนแล้ว!</h2>
+                    <p class="text-sm text-slate-600">คุณได้รับ <strong class="text-sky-500">+15 XP</strong> สะสมเข้าสู่ความเชี่ยวชาญโลจิสติกส์</p>
+                    
+                    <button onclick="renderPath()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 rounded-2xl text-sm transition shadow-md">กลับสู่เส้นทาง</button>
+                </div>
+            `;
+        }
+
+        // EOQ Calculator Tool
+        function renderTools() {
+            const container = document.getElementById('app-content');
+            container.innerHTML = `
+                <div class="space-y-6 pb-12">
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                        <h2 class="text-xl font-bold text-slate-900 mb-2"><i class="fa-solid fa-calculator text-emerald-600 mr-2"></i> คำนวณ EOQ</h2>
+                        <p class="text-xs text-slate-600 mb-6">ปริมาณการสั่งซื้อที่ประหยัดที่สุด</p>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">ความต้องการต่อปี (D)</label>
+                                <input type="number" id="eoq-d" value="10000" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-emerald-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">ต้นทุนสั่งซื้อ (S)</label>
+                                <input type="number" id="eoq-s" value="500" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-emerald-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">ต้นทุนเก็บรักษา (H)</label>
+                                <input type="number" id="eoq-h" value="20" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-emerald-500">
+                            </div>
+                        </div>
+
+                        <button onclick="calculateEOQ()" class="w-full mt-6 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-xl text-sm transition shadow-md">คำนวณ</button>
+
+                        <div id="eoq-result" class="mt-6 p-4 bg-emerald-50 border border-emerald-200 rounded-2xl hidden">
+                            <h4 class="font-bold text-emerald-900 text-sm mb-1">ผลลัพธ์:</h4>
+                            <div class="text-xs text-emerald-800 space-y-1">
+                                <div>EOQ: <strong id="res-eoq" class="text-base">0</strong> ชิ้น</div>
+                                <div>จำนวนสั่งซื้อ: <strong id="res-orders">0</strong> ครั้ง/ปี</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function calculateEOQ() {
+            let D = parseFloat(document.getElementById('eoq-d').value);
+            let S = parseFloat(document.getElementById('eoq-s').value);
+            let H = parseFloat(document.getElementById('eoq-h').value);
+            let eoq = Math.sqrt((2 * D * S) / H);
+            let orders = D / eoq;
+            document.getElementById('res-eoq').innerText = Math.round(eoq);
+            document.getElementById('res-orders').innerText = orders.toFixed(1);
+            document.getElementById('eoq-result').classList.remove('hidden');
+        }
+
+        // Glossary
+        function renderGlossary() {
+            const terms = [
+                { term: "3PL", desc: "ผู้ให้บริการโลจิสติกส์ภายนอก" },
+                { term: "EOQ", desc: "ปริมาณสั่งซื้อประหยัดที่สุด" },
+                { term: "OTIF", desc: "ส่งตรงเวลาและครบถ้วน" },
+                { term: "WMS", desc: "ระบบบริหารคลังสินค้า" },
+                { term: "TMS", desc: "ระบบบริหารการขนส่ง" }
+            ];
+            const container = document.getElementById('app-content');
+            container.innerHTML = `
+                <div class="space-y-4 pb-12">
+                    <h2 class="text-xl font-bold text-slate-900 mb-4"><i class="fa-solid fa-book-bookmark text-emerald-600 mr-2"></i> คลังคำศัพท์</h2>
+                    ${terms.map(t => `
+                        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                            <h4 class="font-bold text-slate-800 text-sm">${t.term}</h4>
+                            <p class="text-xs text-slate-600 mt-1">${t.desc}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Quiz
+        function renderQuiz() {
+            const container = document.getElementById('app-content');
+            container.innerHTML = `
+                <div class="space-y-6 pb-12 text-center py-8">
+                    <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl shadow-inner">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-900">แบบทดสอบประเมินรวม</h2>
+                    <p class="text-xs text-slate-600 max-w-sm mx-auto">ทดสอบความรู้ครบทุกระดับและรับใบประกาศนียบัตร</p>
+                    <button onclick="startLesson(0, 0)" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-6 py-3 rounded-2xl text-sm transition shadow-md">เริ่มทำแบบทดสอบ</button>
+                </div>
+            `;
+        }
+
+        function showModal(msg, title) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = msg;
+            document.getElementById('custom-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('custom-modal').classList.add('hidden');
+        }
+
+        window.onload = function() {
+            saveGameState();
+            renderPath();
+        };
+    </script>
+<script>/*kw-deeplink*/window.addEventListener('load',function(){var h=(location.hash||'').slice(1),b=h&&document.getElementById('nav-btn-'+h);if(b)setTimeout(function(){b.click()},50)});</script>
+</body>
+</html>
