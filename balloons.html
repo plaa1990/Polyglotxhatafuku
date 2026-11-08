@@ -13,8 +13,9 @@
 <meta name="apple-mobile-web-app-title" content="Puffy Studio">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="fonts/fonts.css">
 <link href="https://fonts.googleapis.com/css2?family=Gaegu&family=Hi+Melody&family=Gamja+Flower&family=Mali&family=Yomogi&family=Ma+Shan+Zheng&family=Caveat&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu&family=Hi+Melody&family=Gamja+Flower&family=Mali&family=Yomogi&family=Ma+Shan+Zheng&family=Caveat&display=swap" media="print" onload="this.media='all'" /></noscript>
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu&family=Hi+Melody&family=Gamja+Flower&family=Mali&family=Yomogi&family=Ma+Shan+Zheng&family=Caveat&display=swap" /></noscript>
 <!-- Include QR Code generator library -->
 <script async src="./qrcode.min.js"></script>
 <style>
@@ -1465,6 +1466,428 @@ document.getElementById('msg').textContent='🔥 เติมคำฮิตห�
 
   if (typeof go === 'function') go();
 })()</script>
+<script>
+/* ===== Puffy Studio: Font & Export Upgrade v2 ===== */
+(function(){
+try{
+const $=id=>document.getElementById(id);
+const sel=$('font'),txt=$('text'),msg=()=>$('msg');
+if(!sel||!txt)return;
+const say=t=>{const m=$('msg');if(m)m.textContent=t};
+const redraw=()=>{try{if(typeof clearPC==='function')clearPC()}catch(e){}try{if(typeof go==='function')go()}catch(e){}};
+const fire=el=>el.dispatchEvent(new Event('change',{bubbles:true}));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+/* --- group map: font -> script --- */
+const GROUP={};
+[...sel.options].forEach(o=>{
+  const lab=(o.parentElement&&o.parentElement.label)||'';
+  GROUP[o.value]=lab.includes('🇹🇭')?'th':lab.includes('🇰🇷')?'ko':lab.includes('🇯🇵')?'ja':lab.includes('🇨🇳')?'zh':'';
+});
+Object.assign(GROUP,{'Gaegu':'ko','Hi Melody':'ko','Gamja Flower':'ko','Mali':'th','Yomogi':'ja','Ma Shan Zheng':'zh','Caveat':'en'});
+const DEFAULT_BY={th:'Mali',ko:'Gaegu',ja:'Yomogi',zh:'Ma Shan Zheng'};
+const detect=t=>/[\u3040-\u30FF]/.test(t)?'ja':/[\uAC00-\uD7AF\u1100-\u11FF]/.test(t)?'ko':/[\u0E00-\u0E7F]/.test(t)?'th':/[\u4E00-\u9FFF]/.test(t)?'zh':'en';
+
+/* --- on-demand per-family loader (robust against one bad stylesheet / SW cache) --- */
+const linked=new Set();
+function defined(f){try{return [...document.fonts].some(x=>x.family.replace(/["']/g,'')===f)}catch(e){return false}}
+function ensureFont(fam,bust){
+  return new Promise(res=>{
+    const done=()=>{
+      const sample=(txt.value||'Aa').slice(0,20)+'가あ中ก';
+      Promise.race([document.fonts.load('40px "'+fam+'"',sample),new Promise(r=>setTimeout(r,4000))]).catch(()=>{}).then(()=>res(defined(fam)));
+    };
+    if(!bust&&defined(fam))return done();
+    const key=fam+(bust?'#'+bust:'');
+    if(linked.has(key))return done();
+    linked.add(key);
+    const l=document.createElement('link');
+    l.rel='stylesheet';
+    l.href='https://fonts.googleapis.com/css2?family='+encodeURIComponent(fam).replace(/%20/g,'+')+'&display=swap'+(bust?'&r='+bust:'');
+    l.onload=done;l.onerror=()=>{say('⚠️ โหลดฟอนต์ "'+fam+'" ไม่สำเร็จ ตรวจสอบอินเทอร์เน็ตแล้วกด 🔄');res(false)};
+    document.head.appendChild(l);
+    setTimeout(()=>res(defined(fam)),6000);
+  });
+}
+async function loadAndRedraw(fam,bust){
+  say('⏳ กำลังโหลดฟอนต์ '+fam+' ...');
+  const ok=await ensureFont(fam,bust);
+  say(ok?'✅ ฟอนต์ '+fam+' พร้อมใช้งาน':'⚠️ ฟอนต์ '+fam+' ยังโหลดไม่ได้ (ต้องต่ออินเทอร์เน็ต)');
+  redraw();preview();
+}
+
+/* --- UI --- */
+const wrap=document.createElement('div');
+wrap.id='pgFontTools';
+wrap.style.cssText='margin:8px 0 4px;padding:10px;border:1px dashed var(--line);border-radius:12px;background:var(--bg)';
+wrap.innerHTML=
+ '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">'+
+ '<input type="text" id="pgFontSearch" placeholder="🔎 ค้นหาฟอนต์ เช่น itim, เกาหลี, หนา" style="flex:1 1 160px;min-height:40px;padding:6px 10px">'+
+ '<button type="button" class="sec" id="pgFontRand" title="สุ่มฟอนต์ (Alt+R)">🎲 สุ่มฟอนต์</button>'+
+ '<button type="button" class="sec" id="pgFontRetry" title="โหลดฟอนต์ที่เลือกใหม่ (ข้ามแคช)">🔄 โหลดใหม่</button>'+
+ '</div>'+
+ '<div id="pgFontChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px"></div>'+
+ '<div id="pgFontRecent" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px"></div>'+
+ '<div id="pgFontPrev" style="padding:8px 10px;border-radius:10px;background:#fff;border:1px solid var(--line);font-size:24px;line-height:1.4;min-height:40px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:#333"></div>'+
+ '<label style="display:flex;align-items:center;gap:8px;margin:8px 0 0;font-weight:600"><input type="checkbox" id="pgAutoFont">เลือกฟอนต์ตามภาษาอัตโนมัติ (ไทย/เกาหลี/ญี่ปุ่น/จีน)</label>';
+const anchor=$('fontWarn')||sel;
+anchor.insertAdjacentElement('afterend',wrap);
+
+const chips=$('pgFontChips'),recentBox=$('pgFontRecent'),prev=$('pgFontPrev'),srch=$('pgFontSearch');
+const chipBtn=(fam,label)=>{const b=document.createElement('button');b.type='button';b.className='sec';b.textContent=label||fam;b.style.cssText='font-size:12px;padding:4px 10px;min-height:32px';b.onclick=()=>{sel.value=fam;fire(sel)};return b};
+function preview(){
+  const fam=sel.value,line=(txt.value||'ตัวอย่าง Hello 안녕').split('\n')[0].slice(0,24);
+  prev.style.fontFamily='"'+fam+'",Mali,Gaegu,cursive,sans-serif';
+  prev.textContent=line;
+}
+function renderRecent(){
+  const r=store.get('pgRecentFonts',[]);recentBox.innerHTML='';
+  if(!r.length)return;
+  const t=document.createElement('span');t.textContent='ใช้ล่าสุด:';t.style.cssText='font-size:12px;color:var(--mut);align-self:center';recentBox.appendChild(t);
+  r.forEach(f=>recentBox.appendChild(chipBtn(f)));
+}
+function pushRecent(f){let r=store.get('pgRecentFonts',[]).filter(x=>x!==f);r.unshift(f);store.set('pgRecentFonts',r.slice(0,6));renderRecent()}
+srch.addEventListener('input',()=>{
+  const q=srch.value.trim().toLowerCase();chips.innerHTML='';
+  if(!q)return;
+  const hits=[...sel.options].filter(o=>{
+    const lab=((o.parentElement&&o.parentElement.label)||'').toLowerCase();
+    return o.textContent.toLowerCase().includes(q)||o.value.toLowerCase().includes(q)||lab.includes(q);
+  }).slice(0,12);
+  if(!hits.length){chips.textContent='ไม่พบฟอนต์ที่ค้นหา';chips.style.cssText+=';font-size:12px;color:var(--mut)';return}
+  hits.forEach(o=>chips.appendChild(chipBtn(o.value)));
+});
+$('pgFontRand').onclick=()=>{const o=[...sel.options].filter(x=>x.value!=='MyFont'&&x.value!==sel.value);if(!o.length)return;sel.value=o[Math.floor(Math.random()*o.length)].value;fire(sel)};
+$('pgFontRetry').onclick=()=>{try{if(window.caches)caches.keys().then(ks=>ks.filter(k=>k.startsWith('hatafuku-kawaii-')).forEach(k=>caches.delete(k)))}catch(e){}loadAndRedraw(sel.value,Date.now())};
+const auto=$('pgAutoFont');auto.checked=!!store.get('pgAutoFont',false);
+auto.onchange=()=>{store.set('pgAutoFont',auto.checked);if(auto.checked)autoPick()};
+function autoPick(){
+  if(!auto.checked)return;
+  const sc=detect(txt.value||'');
+  if(sc==='en')return;
+  const g=GROUP[sel.value];
+  if(g===sc)return;
+  const fam=DEFAULT_BY[sc];
+  if(fam&&[...sel.options].some(o=>o.value===fam)){sel.value=fam;fire(sel);say('🔤 สลับเป็นฟอนต์ '+fam+' ให้ตรงกับภาษาของข้อความ')}
+}
+let tAuto;txt.addEventListener('input',()=>{preview();clearTimeout(tAuto);tAuto=setTimeout(autoPick,600)});
+sel.addEventListener('change',()=>{preview();if(sel.value!=='MyFont'){pushRecent(sel.value);loadAndRedraw(sel.value)}});
+document.addEventListener('keydown',e=>{
+  if(e.altKey&&!e.ctrlKey&&e.key.toLowerCase()==='r'){e.preventDefault();$('pgFontRand').click()}
+  if((e.ctrlKey||e.metaKey)&&!e.shiftKey&&e.key.toLowerCase()==='s'){e.preventDefault();try{exportStill()}catch(x){}}
+});
+renderRecent();preview();
+if(sel.value&&sel.value!=='MyFont')ensureFont(sel.value).then(ok=>{if(ok)redraw()});
+
+/* --- Copy PNG to clipboard --- */
+const exp=$('exportBtn');
+if(exp&&!$('pgCopyBtn')){
+  const b=document.createElement('button');b.id='pgCopyBtn';b.type='button';b.className='sec';b.textContent='📋 คัดลอกรูป';b.title='คัดลอก PNG ไปคลิปบอร์ด วางในแชต/เอกสารได้ทันที';
+  exp.insertAdjacentElement('afterend',b);
+  b.onclick=async()=>{
+    if(!(navigator.clipboard&&window.ClipboardItem)){say('เบราว์เซอร์นี้ไม่รองรับการคัดลอกรูป — ใช้ปุ่ม 💾 บันทึก PNG แทน');return}
+    say('กำลังสร้างภาพเพื่อคัดลอก...');
+    let blob;
+    try{
+      await lock();
+      try{
+        SC=+$('xscale').value;animT=null;await render();
+        const f=FMT[$('xfmt').value],trim=(f||window.__pgTrim)&&!$('bgOn').checked;
+        blob=await blobOf(fit(cv,trim?bboxOf(cv):{x:0,y:0,w:cv.width,h:cv.height},f));
+      }finally{SC=1;busy=false;go()}
+      await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);
+      say('คัดลอกรูปแล้ว ✓ วางได้เลย (Ctrl+V)');
+    }catch(err){console.error(err);say('คัดลอกไม่สำเร็จ — ลองปุ่ม 💾 บันทึก PNG แทน')}
+  };
+}
+window.__pgFont={ensureFont,defined,GROUP,detect,DEFAULT_BY};
+}catch(e){console.error('font upgrade failed',e)}
+})();
+</script>
+<script>
+/* ===== Puffy Studio Pro Tools v3: effects • word packs • saved styles • random pack • LINE preview/check • offline fonts ===== */
+(function(){
+try{
+const $=id=>document.getElementById(id);
+const say=t=>{const m=$('msg');if(m)m.textContent=t};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const F=window.__pgFont||{};
+const sel=$('font'),txt=$('text');
+if(!sel||!txt)return;
+const fire=(el,ev)=>el.dispatchEvent(new Event(ev||'change',{bubbles:true}));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const hash=s=>{let h=2166136261;for(const c of String(s)){h^=c.codePointAt(0);h=Math.imul(h,16777619)}return h>>>0};
+const rng=seed=>{let s=(seed>>>0)||1;return()=>{s=(Math.imul(s,1664525)+1013904223)>>>0;return s/4294967296}};
+const detect=F.detect||(t=>/[\u3040-\u30FF]/.test(t)?'ja':/[\uAC00-\uD7AF]/.test(t)?'ko':/[\u0E00-\u0E7F]/.test(t)?'th':/[\u4E00-\u9FFF]/.test(t)?'zh':'en');
+const GROUP=F.GROUP||{};
+
+/* ---------- word packs ---------- */
+const PACKS={
+th:{'ทักทาย':['สวัสดี','ว่าไง','อรุณสวัสดิ์','ราตรีสวัสดิ์','บ๊ายบาย'],'ขอบคุณ/ขอโทษ':['ขอบคุณ','ขอบคุณมาก','ขอโทษนะ','ไม่เป็นไร','ยินดีจ้า'],'ให้กำลังใจ':['สู้ๆ','เก่งมาก','เยี่ยมเลย','ไหวนะ','ภูมิใจนะ'],'ความรัก':['รักนะ','คิดถึง','กอดๆ','น่ารักจัง','เป็นห่วง'],'เฉลิมฉลอง':['สุขสันต์วันเกิด','ยินดีด้วย','ปาร์ตี้','ฉลองกัน','โชคดีนะ'],'แชตประจำวัน':['โอเค','รับทราบ','รอแป๊บ','หิวแล้ว','ง่วงจัง','ถึงแล้ว','กำลังไป','ฮ่าๆ']},
+en:{'Greetings':['Hello','Hi!','Good Morning','Good Night','Bye Bye'],'Thanks/Sorry':['Thank You','Thanks!','Sorry','No Worries','Welcome'],'Cheer':['You Can!','Great Job','Awesome','Go Go!','So Proud'],'Love':['Love You','Miss You','Hugs','So Cute','Take Care'],'Celebrate':['Happy Birthday','Congrats','Party Time','Cheers','Good Luck'],'Daily':['OK!','Wait a Sec','Hungry','Sleepy','I\'m Here','On My Way','LOL']},
+ko:{'인사':['안녕','안녕하세요','좋은 아침','잘 자요','또 봐요'],'감사/사과':['감사해요','고마워','미안해','괜찮아','천만에요'],'응원':['화이팅','잘했어','최고야','힘내','자랑스러워'],'사랑':['사랑해','보고 싶어','안아줘','귀여워','걱정돼'],'축하':['생일 축하해','축하해','파티','건배','행운을 빌어'],'일상':['알겠어','잠깐만','배고파','졸려','도착했어','가는 중','하하']},
+ja:{'あいさつ':['こんにちは','おはよう','おやすみ','またね','よろしく'],'感謝/謝罪':['ありがとう','ごめんね','大丈夫','どういたしまして','お疲れさま'],'応援':['がんばれ','すごい','最高','ファイト','誇りだよ'],'愛':['大好き','会いたい','ぎゅー','かわいい','心配だよ'],'お祝い':['お誕生日おめでとう','おめでとう','パーティー','乾杯','幸運を'],'日常':['了解','ちょっと待って','お腹すいた','眠い','着いたよ','向かってる','笑']},
+zh:{'问候':['你好','早安','晚安','再见','请多关照'],'感谢/道歉':['谢谢','对不起','没关系','不客气','辛苦了'],'加油':['加油','太棒了','真厉害','你可以的','为你骄傲'],'爱':['我爱你','想你了','抱抱','好可爱','担心你'],'庆祝':['生日快乐','恭喜','派对','干杯','祝你好运'],'日常':['好的','等一下','肚子饿','好困','到了','在路上','哈哈']}
+};
+const LANGS={th:'🇹🇭 ไทย',en:'🇬🇧 อังกฤษ',ko:'🇰🇷 เกาหลี',ja:'🇯🇵 ญี่ปุ่น',zh:'🇨🇳 จีน'};
+const LANG_FONT={th:'Mali',en:'Caveat',ko:'Gaegu',ja:'Yomogi',zh:'Ma Shan Zheng'};
+
+/* ---------- panel ---------- */
+const card=document.querySelector('main .card')||document.body;
+const d=document.createElement('details');d.id='pgPro';
+const btn=(id,t,extra)=>'<button type="button" class="sec" id="'+id+'" style="'+(extra||'')+'">'+t+'</button>';
+d.innerHTML='<summary>🚀 เครื่องมือ Pro (เอฟเฟกต์ • ชุดคำ • สไตล์โปรด • ตรวจ LINE • ฟอนต์ออฟไลน์)</summary>'+
+'<div style="padding:4px 2px 12px">'+
+/* 4 effects */
+'<label>✨ เอฟเฟกต์วัสดุเพิ่มเติม</label>'+
+'<select id="pgFx"><option value="none">ไม่ใช้</option><option value="glitter">✨ กลิตเตอร์ระยิบ</option><option value="fuzzy">🧸 ขนปุยนุ่ม</option><option value="water">💧 น้ำใส + ฟองอากาศ</option><option value="jpb">🍬 เยลลี่สองสี ชมพู→ฟ้า</option><option value="jyo">🍬 เยลลี่สองสี เหลือง→ส้ม</option><option value="jpm">🍬 เยลลี่สองสี ม่วง→มิ้นต์</option></select>'+
+'<label>ความแรงเอฟเฟกต์</label><input type="range" id="pgFxAmt" min="10" max="100" value="60">'+
+/* 2 word packs */
+'<h2>📚 ชุดคำพร้อมใช้ตามภาษา</h2>'+
+'<div style="display:flex;gap:6px;flex-wrap:wrap"><select id="pgLang" style="flex:1 1 120px">'+Object.keys(LANGS).map(k=>'<option value="'+k+'">'+LANGS[k]+'</option>').join('')+'</select><select id="pgCat" style="flex:1 1 140px"></select></div>'+
+'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">'+btn('pgPackFill','➡️ ใส่ในชุดสติกเกอร์')+btn('pgPackAdd','➕ เพิ่มต่อท้าย')+btn('pgPackFirst','🔤 ใช้คำแรกเป็นข้อความ')+'</div>'+
+'<label style="display:flex;align-items:center;gap:8px;font-weight:600"><input type="checkbox" id="pgPackFont" checked>สลับฟอนต์ให้ตรงภาษาอัตโนมัติ</label>'+
+/* 5 random pack */
+'<h2>🎲 สุ่มสไตล์ทั้งชุดสติกเกอร์</h2>'+
+'<label style="display:flex;align-items:center;gap:8px;font-weight:600"><input type="checkbox" id="pgRandPack">สุ่มสไตล์ให้แต่ละตัวไม่ซ้ำกัน ตอนกด "สร้างและดาวน์โหลด ZIP"</label>'+
+'<div style="display:flex;gap:12px;flex-wrap:wrap;font-size:13px;margin-top:6px"><label style="display:flex;gap:4px;align-items:center;margin:0"><input type="checkbox" id="pgRColor" checked>สี</label><label style="display:flex;gap:4px;align-items:center;margin:0"><input type="checkbox" id="pgRMat" checked>วัสดุ</label><label style="display:flex;gap:4px;align-items:center;margin:0"><input type="checkbox" id="pgRFont">ฟอนต์</label><label style="display:flex;gap:4px;align-items:center;margin:0"><input type="checkbox" id="pgRFx">เอฟเฟกต์</label></div>'+
+'<p class="hint">เสร็จแล้วระบบจะคืนสไตล์เดิมของคุณให้อัตโนมัติ</p>'+
+/* 3 styles */
+'<h2>⭐ สไตล์โปรดของฉัน</h2>'+
+'<div style="display:flex;gap:6px;flex-wrap:wrap"><input type="text" id="pgStyName" placeholder="ตั้งชื่อสไตล์" style="flex:1 1 140px">'+btn('pgStySave','💾 บันทึกสไตล์นี้')+'</div>'+
+'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><select id="pgStyList" style="flex:1 1 160px"></select>'+btn('pgStyApply','▶️ ใช้')+btn('pgStyDel','🗑️ ลบ')+'</div>'+
+/* 6 7 */
+'<h2>✅ ตรวจก่อนส่งออก & พรีวิวแชต LINE</h2>'+
+'<div style="display:flex;gap:6px;flex-wrap:wrap">'+btn('pgCheckBtn','✅ ตรวจเกณฑ์ LINE')+btn('pgChatBtn','💬 พรีวิวในแชต LINE')+'</div><div id="pgReport" style="margin-top:8px;font-size:13px;line-height:1.6"></div>'+
+/* 1 offline */
+'<h2>📥 ฟอนต์ออฟไลน์</h2>'+
+'<div style="display:flex;gap:6px;flex-wrap:wrap">'+btn('pgOffBtn','📥 เตรียมฟอนต์ทั้งหมดไว้ใช้ออฟไลน์')+btn('pgMyFontDel','🗑️ ลบฟอนต์ของฉันที่บันทึกไว้')+'</div>'+
+'<p class="hint" id="pgOffInfo">กดตอนมีอินเทอร์เน็ต 1 ครั้ง ระบบจะเก็บฟอนต์ไว้ในเครื่อง (ตัวอักษรที่ใช้บ่อย) • ฟอนต์ที่อัปโหลดเองจะถูกจำไว้อัตโนมัติ • หรือวางไฟล์ฟอนต์ในโฟลเดอร์ fonts/ ตามคู่มือในไฟล์ fonts/README.md</p>'+
+'</div>';
+const exportSec=[...card.querySelectorAll(':scope > details')].find(x=>/ส่งออก/.test((x.querySelector('summary')||{}).textContent||''));
+if(exportSec)card.insertBefore(d,exportSec);else card.appendChild(d);
+
+/* ---------- 4. effects (post-process on main canvas) ---------- */
+const cv=$('cv');
+if(window.IDS&&Array.isArray(IDS)){if(!IDS.includes('pgFx'))IDS.push('pgFx','pgFxAmt')}
+const g2=()=>cv.getContext('2d');
+function applyFx(){
+  const fxEl=$('pgFx');if(!fxEl)return;const mode=fxEl.value;if(mode==='none')return;
+  const amt=(+$('pgFxAmt').value||60)/100,w=cv.width,h=cv.height,g=g2();
+  if(w<4||h<4)return;
+  const bb=bboxOf(cv);if(!bb||bb.w<2||bb.h<2)return;
+  const R=rng(hash((txt.value||'')+mode+w+'x'+h)),px=Math.max(1,w/400);
+  g.save();
+  if(mode==='glitter'){
+    g.globalCompositeOperation='source-atop';
+    const n=Math.min(1200,Math.round(bb.w*bb.h/700*amt*2.2));
+    const cols=['#ffffff','#fff7c2','#ffd9f0','#d8f3ff'];
+    for(let i=0;i<n;i++){
+      const x=bb.x+R()*bb.w,y=bb.y+R()*bb.h,s=(1+R()*3.2)*px;
+      g.globalAlpha=.45+R()*.55;g.fillStyle=cols[(R()*cols.length)|0];
+      if(R()<.35){g.beginPath();g.moveTo(x,y-s*2);g.lineTo(x+s*.5,y-s*.5);g.lineTo(x+s*2,y);g.lineTo(x+s*.5,y+s*.5);g.lineTo(x,y+s*2);g.lineTo(x-s*.5,y+s*.5);g.lineTo(x-s*2,y);g.lineTo(x-s*.5,y-s*.5);g.closePath();g.fill()}
+      else{g.beginPath();g.arc(x,y,s*.55,0,6.283);g.fill()}
+    }
+  }else if(mode==='fuzzy'){
+    const copy=document.createElement('canvas');copy.width=w;copy.height=h;copy.getContext('2d').drawImage(cv,0,0);
+    const r=Math.max(1.5,(+$('size').value||80)*(window.SC||1)*.035*(.4+amt));
+    g.globalCompositeOperation='destination-over';g.globalAlpha=.28;
+    for(let i=0;i<34;i++){const a=R()*6.283,dd=r*(.5+R()*.9);g.drawImage(copy,Math.cos(a)*dd,Math.sin(a)*dd)}
+    g.globalCompositeOperation='source-atop';
+    const n=Math.min(2600,Math.round(bb.w*bb.h/160*amt));
+    for(let i=0;i<n;i++){const x=bb.x+R()*bb.w,y=bb.y+R()*bb.h;g.globalAlpha=.1+R()*.2;g.fillStyle=R()<.5?'#ffffff':'#000000';g.fillRect(x,y,px,px*(1+R()*2))}
+  }else if(mode==='water'){
+    g.globalCompositeOperation='destination-out';g.fillStyle='rgba(0,0,0,'+(.3*amt).toFixed(3)+')';g.fillRect(0,0,w,h);
+    g.globalCompositeOperation='source-atop';
+    let gr=g.createLinearGradient(0,bb.y,0,bb.y+bb.h);gr.addColorStop(0,'rgba(255,255,255,'+(.4*amt)+')');gr.addColorStop(.5,'rgba(255,255,255,0)');gr.addColorStop(1,'rgba(90,180,255,'+(.3*amt)+')');
+    g.globalAlpha=1;g.fillStyle=gr;g.fillRect(bb.x,bb.y,bb.w,bb.h);
+    const n=Math.round(bb.w/45*amt*2)+3;
+    for(let i=0;i<n;i++){
+      const x=bb.x+R()*bb.w,y=bb.y+R()*bb.h,r=(2.5+R()*8)*px;
+      const rg=g.createRadialGradient(x-r*.3,y-r*.3,r*.1,x,y,r);rg.addColorStop(0,'rgba(255,255,255,.85)');rg.addColorStop(1,'rgba(255,255,255,.06)');
+      g.globalAlpha=1;g.fillStyle=rg;g.beginPath();g.arc(x,y,r,0,6.283);g.fill();
+      g.strokeStyle='rgba(255,255,255,.7)';g.lineWidth=Math.max(.6,px*.8);g.stroke();
+    }
+  }else{
+    const P={jpb:['#ff9ad5','#7fd4ff'],jyo:['#ffe66d','#ff9f5a'],jpm:['#c7a2ff','#8cf5d2']}[mode];
+    if(P){g.globalCompositeOperation='source-atop';const gr=g.createLinearGradient(0,bb.y,0,bb.y+bb.h);gr.addColorStop(0,P[0]);gr.addColorStop(1,P[1]);g.globalAlpha=.25+.55*amt;g.fillStyle=gr;g.fillRect(bb.x,bb.y,bb.w,bb.h);
+      g.globalCompositeOperation='source-atop';g.globalAlpha=.35;const hl=g.createLinearGradient(0,bb.y,0,bb.y+bb.h*.45);hl.addColorStop(0,'rgba(255,255,255,.9)');hl.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=hl;g.fillRect(bb.x,bb.y,bb.w,bb.h*.45)}
+  }
+  g.restore();
+}
+/* wrap render so effects apply to preview, export, animation and packs */
+const origRender=window.render;
+let lastRandText=null,randIdx=0,randOrder=null;
+function randomizeFor(text){
+  const R=rng(hash(text)+randIdx*7919);
+  if($('pgRColor').checked&&typeof PRESETS==='object'){
+    const keys=Object.keys(PRESETS);
+    if(!randOrder){randOrder=keys.slice().sort(()=>R()-.5)}
+    const k=randOrder[randIdx%randOrder.length];$('base').value=PRESETS[k][0];$('shade').value=PRESETS[k][1];
+  }
+  if($('pgRMat').checked){const m=[...$('mat').options].map(o=>o.value);$('mat').value=m[(R()*m.length)|0]}
+  if($('pgRFx').checked){const f=[...$('pgFx').options].map(o=>o.value);$('pgFx').value=f[(R()*f.length)|0]}
+  let fam=null;
+  if($('pgRFont').checked){
+    const sc=detect(text),all=[...sel.options].map(o=>o.value).filter(v=>v!=='MyFont');
+    let c=sc==='en'?all:all.filter(v=>GROUP[v]===sc);if(!c.length)c=all;
+    fam=c[(R()*c.length)|0];sel.value=fam;
+  }
+  randIdx++;return fam;
+}
+if(typeof origRender==='function'){
+  window.render=async function(){
+    if(window.__pgRand){
+      const t=txt.value;
+      if(t!==lastRandText){lastRandText=t;const fam=randomizeFor(t);if(fam&&F.ensureFont){try{await F.ensureFont(fam)}catch(e){}}}
+    }
+    const r=await origRender.apply(this,arguments);
+    try{applyFx()}catch(e){console.error('fx',e)}
+    return r;
+  };
+}
+$('pgFx').addEventListener('change',()=>{if(typeof go==='function')go()});
+$('pgFxAmt').addEventListener('input',()=>{if(typeof go==='function')go()});
+
+/* ---------- 2. word packs ---------- */
+const catSel=$('pgCat');
+function fillCats(){const L=PACKS[$('pgLang').value];catSel.innerHTML='<option value="*">ทุกหมวด</option>'+Object.keys(L).map(k=>'<option>'+esc(k)+'</option>').join('')}
+fillCats();$('pgLang').addEventListener('change',fillCats);
+const words=()=>{const L=PACKS[$('pgLang').value];return catSel.value==='*'?[].concat(...Object.values(L)):(L[catSel.value]||[])};
+const setLangFont=()=>{if(!$('pgPackFont').checked)return;const fam=LANG_FONT[$('pgLang').value];if(fam&&[...sel.options].some(o=>o.value===fam)){sel.value=fam;fire(sel)}};
+$('pgPackFill').onclick=()=>{const p=$('pack');if(!p)return;p.value=words().join('\n');setLangFont();say('ใส่ '+words().length+' คำลงในชุดสติกเกอร์แล้ว ✓')};
+$('pgPackAdd').onclick=()=>{const p=$('pack');if(!p)return;p.value=(p.value.trim()?p.value.trim()+'\n':'')+words().join('\n');setLangFont();say('เพิ่มคำแล้ว ✓')};
+$('pgPackFirst').onclick=()=>{const w=words();if(!w.length)return;txt.value=w[0];fire(txt,'input');setLangFont();if(typeof go==='function')go()};
+
+/* ---------- 5. random pack ---------- */
+const packBtn=$('packBtn');
+if(packBtn&&packBtn.onclick){
+  const orig=packBtn.onclick;
+  packBtn.onclick=async function(e){
+    if(!$('pgRandPack').checked)return orig.call(this,e);
+    const keep=getStyle();lastRandText=null;randIdx=0;randOrder=null;window.__pgRand=true;
+    try{await orig.call(this,e)}finally{window.__pgRand=false;setStyle(keep,true)}
+  };
+}
+
+/* ---------- 3. saved styles ---------- */
+const STYLE_IDS=['font','mat','base','shade','gradOn','base2','depth','thick','space','size','curve','stk','stkColor','glint','spark','shadow','decor','dshape','dsize','italicText','pgFx','pgFxAmt'].filter(i=>$(i));
+function getStyle(){const o={};STYLE_IDS.forEach(i=>{const e=$(i);o[i]=e.type==='checkbox'?e.checked:e.value});return o}
+function setStyle(o,quiet){
+  STYLE_IDS.forEach(i=>{if(!(i in o))return;const e=$(i);if(e.tagName==='SELECT'&&![...e.options].some(x=>x.value===o[i]))return;
+    if(e.type==='checkbox')e.checked=o[i];else e.value=o[i];const v=$(i+'V');if(v)v.textContent=e.value;
+    if(!quiet){fire(e,'input');fire(e,'change')}});
+  if(typeof go==='function')go();
+}
+const styList=$('pgStyList');
+function renderStyles(){const s=store.get('pgStyles',{});const k=Object.keys(s);styList.innerHTML=k.length?k.map(n=>'<option>'+esc(n)+'</option>').join(''):'<option value="">(ยังไม่มีสไตล์ที่บันทึก)</option>'}
+renderStyles();
+$('pgStySave').onclick=()=>{const n=$('pgStyName').value.trim();if(!n){say('ตั้งชื่อสไตล์ก่อนบันทึก');return}const s=store.get('pgStyles',{});s[n]=getStyle();store.set('pgStyles',s);renderStyles();styList.value=n;say('บันทึกสไตล์ "'+n+'" แล้ว ✓')};
+$('pgStyApply').onclick=()=>{const s=store.get('pgStyles',{}),o=s[styList.value];if(!o){say('เลือกสไตล์ก่อน');return}setStyle(o,false);say('ใช้สไตล์ "'+styList.value+'" แล้ว ✓')};
+$('pgStyDel').onclick=()=>{const s=store.get('pgStyles',{});if(!(styList.value in s))return;delete s[styList.value];store.set('pgStyles',s);renderStyles();say('ลบสไตล์แล้ว')};
+
+/* ---------- 7. LINE checker ---------- */
+async function runCheck(){
+  const out=[],add=(l,t)=>out.push([l,t]);
+  const bb=bboxOf(cv);
+  if(!bb||bb.w<3||bb.h<3){add('bad','ยังไม่มีเนื้อหาบนแคนวาส');return out}
+  const fk=$('xfmt').value,f=FMT[fk];
+  const nChars=[...(txt.value||'').replace(/\s/g,'')].length;
+  if($('bgOn').checked)add('warn','เปิดพื้นหลังอยู่ — สติกเกอร์ LINE ต้องเป็นพื้นโปร่งใส');else add('ok','พื้นหลังโปร่งใส');
+  if(!f){add('warn','ขนาดส่งออกเป็น "ต้นฉบับ" ('+bb.w+'×'+bb.h+') ไม่ตรงเกณฑ์ LINE — เลือก "สติกเกอร์ LINE (370×320)" ก่อนส่งออก')}
+  else{
+    const m=f[2],sc=Math.min((f[0]-2*m)/bb.w,(f[1]-2*m)/bb.h);
+    add(f[0]%2===0&&f[1]%2===0?'ok':'bad','ขนาดไฟล์ '+f[0]+'×'+f[1]+' px'+(f[0]%2===0&&f[1]%2===0?' (เลขคู่ ✓)':' ต้องเป็นเลขคู่'));
+    add('ok','เว้นขอบรอบภาพ '+m+' px ✓');
+    if(sc>2.5)add('warn','ภาพต้นฉบับเล็กเกินไป ถูกขยาย '+sc.toFixed(1)+' เท่า อาจเบลอ — เพิ่มขนาดตัวอักษรหรือตั้ง "ความละเอียด" เป็น 2–3 เท่า');
+    else if(sc<.35)add('warn','ภาพใหญ่มากถูกย่อ '+(1/sc).toFixed(1)+' เท่า รายละเอียดเล็กอาจหาย');
+    else add('ok','อัตราย่อ/ขยายเหมาะสม ('+sc.toFixed(2)+'×)');
+    try{
+      const c=fit(cv,bb,f),b=await blobOf(c),kb=b.size/1024;
+      if(b.size>1048576)add('bad','ไฟล์ '+kb.toFixed(0)+' KB เกิน 1 MB (เกณฑ์ LINE)');
+      else if(b.size>600*1024)add('warn','ไฟล์ '+kb.toFixed(0)+' KB ค่อนข้างใหญ่ (เกณฑ์ ≤1 MB)');
+      else add('ok','ขนาดไฟล์ประมาณ '+kb.toFixed(0)+' KB ✓');
+    }catch(e){}
+  }
+  const tabSc=Math.min((96-8)/bb.w,(74-8)/bb.h),glyph=(+$('size').value||80)*(window.SC||1)*tabSc*.7;
+  if(glyph<9)add('warn','เมื่อย่อเป็นไอคอนแท็บ (96×74) ตัวอักษรสูงราว '+glyph.toFixed(0)+' px อ่านยาก — ใช้ข้อความสั้นลงหรือฟอนต์หนา');
+  else add('ok','อ่านออกเมื่อย่อเป็นไอคอนแท็บ (ตัวอักษรราว '+glyph.toFixed(0)+' px)');
+  if(nChars>12)add('warn','ข้อความยาว '+nChars+' ตัวอักษร — สติกเกอร์ที่อ่านง่ายควรไม่เกิน ~12 ตัว');
+  if(sel.value==='MyFont')add('warn','ใช้ฟอนต์ของคุณเอง — ตรวจสิทธิ์การใช้เชิงพาณิชย์ก่อนขายสติกเกอร์');
+  const p=$('pack');if(p){const n=p.value.split('\n').map(s=>s.trim()).filter(Boolean).length;if([8,16,24,32,40].includes(n))add('ok','ชุดสติกเกอร์ '+n+' รูป ตรงเกณฑ์ LINE ✓');else add('warn','ชุดสติกเกอร์ LINE ต้องมี 8/16/24/32/40 รูป ตอนนี้มี '+n+' รูป')}
+  return out;
+}
+const ICON={ok:'✅',warn:'⚠️',bad:'❌'};
+const reportHtml=a=>a.map(([l,t])=>'<div>'+ICON[l]+' '+esc(t)+'</div>').join('');
+$('pgCheckBtn').onclick=async()=>{$('pgReport').innerHTML='กำลังตรวจ...';try{$('pgReport').innerHTML=reportHtml(await runCheck())}catch(e){$('pgReport').textContent='ตรวจไม่สำเร็จ: '+e.message}};
+
+/* ---------- 6. LINE chat preview ---------- */
+$('pgChatBtn').onclick=async()=>{
+  const bb=bboxOf(cv);if(!bb||bb.w<3){say('ยังไม่มีเนื้อหาให้พรีวิว');return}
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:10px';
+  const box=document.createElement('div');
+  box.style.cssText='background:#fff;color:#333;border-radius:16px;max-width:400px;width:100%;max-height:94vh;overflow:auto;padding:12px;font-size:13px';
+  box.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><b>💬 พรีวิวในแชต LINE</b><span><button type="button" class="sec" id="pgChatTheme" style="padding:4px 10px;min-height:32px">🌙 โหมดมืด</button> <button type="button" class="sec" id="pgChatClose" style="padding:4px 10px;min-height:32px">✕</button></span></div><div id="pgChatBg" style="background:#8cabd9;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px"></div><div style="margin-top:10px"><b>ขนาดเล็ก (ไอคอนแท็บ / รายการ)</b><div id="pgChatSmall" style="display:flex;gap:12px;align-items:flex-end;margin-top:6px;padding:8px;background:repeating-conic-gradient(#eee 0 25%,#fff 0 50%) 0 0/14px 14px;border-radius:10px"></div></div><div id="pgChatRep" style="margin-top:10px;line-height:1.6"></div>';
+  ov.appendChild(box);document.body.appendChild(ov);
+  const bg=box.querySelector('#pgChatBg');
+  const bubble=(t,right)=>{const r=document.createElement('div');r.style.cssText='display:flex;gap:6px;align-items:flex-end;'+(right?'justify-content:flex-end':'');
+    const b='<div style="background:'+(right?'#06c755;color:#fff':'#fff;color:#333')+';padding:7px 11px;border-radius:16px;max-width:70%">'+esc(t)+'</div>';
+    r.innerHTML=right?b:'<div style="width:30px;height:30px;border-radius:50%;background:#ffd1e3;flex:none"></div>'+b;return r};
+  bg.appendChild(bubble('ส่งสติกเกอร์ใหม่มาดูหน่อย',false));
+  const sr=document.createElement('div');sr.style.cssText='display:flex;gap:6px;align-items:flex-end';
+  const av=document.createElement('div');av.style.cssText='width:30px;height:30px;border-radius:50%;background:#ffd1e3;flex:none';sr.appendChild(av);
+  const s1=fit(cv,bb,FMT.line);s1.style.cssText='width:150px;height:auto';sr.appendChild(s1);bg.appendChild(sr);
+  bg.appendChild(bubble('น่ารักมาก! 😍',true));
+  const small=box.querySelector('#pgChatSmall');
+  const t1=fit(cv,bb,[96,74,4]);t1.style.cssText='width:96px;height:74px';
+  const t2=fit(cv,bb,[96,74,4]);t2.style.cssText='width:56px;height:auto';
+  const t3=fit(cv,bb,[96,74,4]);t3.style.cssText='width:36px;height:auto';
+  small.append(t1,t2,t3);
+  let dark=false;box.querySelector('#pgChatTheme').onclick=function(){dark=!dark;bg.style.background=dark?'#16181d':'#8cabd9';this.textContent=dark?'☀️ โหมดสว่าง':'🌙 โหมดมืด'};
+  box.querySelector('#pgChatClose').onclick=()=>ov.remove();ov.addEventListener('click',e=>{if(e.target===ov)ov.remove()});
+  try{box.querySelector('#pgChatRep').innerHTML=reportHtml(await runCheck())}catch(e){}
+};
+
+/* ---------- 1. offline fonts ---------- */
+const SAMPLE={th:'กขคงจฉชญดตนบปมยรลวสหอฮ เแโใไ ะาิีึืุู ่้๊๋ ABCabc123',ko:'가나다라마바사아자차카타파하 안녕하세요 사랑 고마워 ABCabc',ja:'あいうえおかきくけこさしすせそ アイウエオ こんにちは ありがとう 大好き',zh:'你好谢谢爱新年快乐中文加油生日快乐再见想你了',en:'ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789 !?'};
+$('pgOffBtn').onclick=async()=>{
+  const info=$('pgOffInfo'),fams=[...sel.options].map(o=>o.value).filter(v=>v!=='MyFont');let done=0,ok=0;
+  if(!navigator.onLine){info.textContent='⚠️ ต้องต่ออินเทอร์เน็ตก่อนจึงจะเตรียมฟอนต์ได้';return}
+  $('pgOffBtn').disabled=true;
+  const work=async fam=>{
+    try{
+      if(F.ensureFont)await F.ensureFont(fam);
+      const sc=GROUP[fam]||'en',txts=[SAMPLE[sc]||SAMPLE.en];if(sc==='ja')txts.push(SAMPLE.zh);if(sc!=='en')txts.push(SAMPLE.en);
+      for(const t of txts)await Promise.race([document.fonts.load('40px "'+fam+'"',t),new Promise(r=>setTimeout(r,8000))]);
+      ok++;
+    }catch(e){}
+    done++;info.textContent='กำลังเตรียมฟอนต์ '+done+'/'+fams.length+' ...';
+  };
+  const q=fams.slice();await Promise.all([0,1,2].map(async()=>{while(q.length)await work(q.shift())}));
+  $('pgOffBtn').disabled=false;
+  store.set('pgOffline',Date.now());
+  info.textContent='✅ เตรียมแล้ว '+ok+'/'+fams.length+' ฟอนต์ — ใช้ออฟไลน์ได้สำหรับตัวอักษรที่ใช้บ่อย (ตัวอักษรแปลก/หายากอาจยังต้องใช้เน็ต) • ต้องเปิดแอปผ่าน https หรือติดตั้งเป็น PWA เพื่อให้ service worker ทำงาน';
+  if(typeof clearPC==='function')clearPC();if(typeof go==='function')go();
+};
+/* persisted custom font (IndexedDB) */
+const idb=()=>new Promise((res,rej)=>{const r=indexedDB.open('pgFonts',1);r.onupgradeneeded=()=>r.result.createObjectStore('f');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+const idbPut=async(k,v)=>{const db=await idb();return new Promise((res,rej)=>{const t=db.transaction('f','readwrite');t.objectStore('f').put(v,k);t.oncomplete=res;t.onerror=()=>rej(t.error)})};
+const idbGet=async k=>{const db=await idb();return new Promise((res,rej)=>{const r=db.transaction('f').objectStore('f').get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})};
+const idbDel=async k=>{const db=await idb();return new Promise((res,rej)=>{const t=db.transaction('f','readwrite');t.objectStore('f').delete(k);t.oncomplete=res;t.onerror=()=>rej(t.error)})};
+const ff=$('fontFile');
+if(ff){ff.addEventListener('change',async()=>{try{const f=ff.files[0];if(!f)return;await idbPut('my',{name:f.name,buf:await f.arrayBuffer()});say('บันทึกฟอนต์ "'+f.name+'" ไว้ในเครื่องแล้ว — เปิดครั้งหน้าไม่ต้องอัปโหลดซ้ำ')}catch(e){}})}
+(async()=>{try{
+  const rec=await idbGet('my');if(!rec||[...sel.options].some(o=>o.value==='MyFont'))return;
+  const face=new FontFace('MyFont',rec.buf);await face.load();document.fonts.add(face);
+  if(typeof ALL!=='undefined'&&!ALL.includes('MyFont'))ALL.push('MyFont');
+  const o=document.createElement('option');o.value='MyFont';o.textContent='ฟอนต์ของฉัน: '+rec.name;sel.appendChild(o);
+}catch(e){}})();
+$('pgMyFontDel').onclick=async()=>{try{await idbDel('my');say('ลบฟอนต์ที่บันทึกไว้แล้ว (จะหายไปหลังโหลดหน้าใหม่)')}catch(e){say('ลบไม่สำเร็จ')}};
+
+}catch(e){console.error('pro tools failed',e)}
+})();
+</script>
 <script src="./hatafuku-core.js"></script>
 <script src="./hatafuku-palette.js"></script></body>
 </html>

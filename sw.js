@@ -1,7 +1,7 @@
 // Service worker: เก็บไฟล์ไว้ในเครื่อง ใช้ออฟไลน์ได้หลังเปิดครั้งแรก
-const CACHE = 'hatafuku-kawaii-v5';
+const CACHE = 'hatafuku-kawaii-v7';
 const SCOPE = self.registration.scope;
-const FILES = ["apple-touch-icon.png", "classic.html", "app.css", "app.js", "balloons.html", "code-runner.html", "codequest.html", "cozy-theme.css", "creator-studio.html", "crossword-studio.html", "dot-to-dot.html", "draw-studio.html", "draw.html", "extras.html", "favicon.png", "favicon.svg", "fx.js", "handwriting.html", "hatafuku-core.js", "hatafuku-palette.js", "hatafuku-theme.css", "html2canvas.min.js", "icon-192.png", "icon-512.png", "icon-maskable-512.png", "icon.svg", "hf-index.html", "io.js", "jszip.min.js", "kawaii-theme.css", "lessons.html", "line-theme.html", "manifest.webmanifest", "math-worksheet.html", "maze-studio.html", "mini-booklet.html", "minigames.html", "mockup-3d.html", "qrcode.min.js", "standalone-index.html", "studio-ext.js", "studio-plus.js", "studio.html", "sw.js", "thai-practice.html", "theme.css", "typing.html", "index.html", "logistics.html", "polyglot-5.html", "polyglot.html", "favicon.ico"];
+const FILES = ["apple-touch-icon.png", "classic.html", "app.css", "app.js", "balloons.html", "code-runner.html", "codequest.html", "cozy-theme.css", "creator-studio.html", "crossword-studio.html", "dot-to-dot.html", "draw-studio.html", "draw.html", "extras.html", "favicon.png", "favicon.svg", "fx.js", "handwriting.html", "hatafuku-core.js", "hatafuku-palette.js", "hatafuku-theme.css", "html2canvas.min.js", "icon-192.png", "icon-512.png", "icon-maskable-512.png", "icon.svg", "hf-index.html", "io.js", "jszip.min.js", "kawaii-theme.css", "lessons.html", "line-theme.html", "manifest.webmanifest", "math-worksheet.html", "maze-studio.html", "mini-booklet.html", "minigames.html", "mockup-3d.html", "qrcode.min.js", "standalone-index.html", "studio-ext.js", "studio-plus.js", "studio.html", "sw.js", "thai-practice.html", "theme.css", "typing.html", "index.html", "logistics.html", "polyglot-5.html", "polyglot.html", "favicon.ico", "fonts/fonts.css"];
 const EXTERNAL_OK = ['cdn.tailwindcss.com','cdnjs.cloudflare.com','fonts.googleapis.com','fonts.gstatic.com'];
 
 self.addEventListener('install', (e) => {
@@ -26,7 +26,7 @@ self.addEventListener('fetch', (e) => {
   const same = url.origin === self.location.origin;
   if (!same && !EXTERNAL_OK.includes(url.hostname)) return;
   e.respondWith(
-    caches.match(req, { ignoreSearch: true }).then((cached) => {
+    caches.match(req, same ? { ignoreSearch: true } : undefined).then((cached) => {
       const net = fetch(req).then((res) => {
         if (res && (res.ok || res.type === 'opaque')) {
           const copy = res.clone();
